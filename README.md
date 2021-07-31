@@ -31,12 +31,6 @@ Each installation step will take less than ~1 min
 
 2. Add the absolute path of `xxx/src` directory to `$PATH`
 
-3. Make `/src/*` executable
-
-   ```shell
-   chmod u+x xxx/src/*
-   ```
-
 ### Sample Codes
 
 The Evolution Prediction Toolkit package contains an example input file in the `examples` directory so that users can easily try the basic function as follows:

@@ -1,0 +1,2 @@
+version,test,seed,scoring,sampling,print,pointbiserialr,permutation,normalize,n_estimators,model,max_depth,lr_solver,lr_penalty,kfold,input,hv,header,cv
+False,Xy.txt,0,roc_auc_pvalue,none,True,False,100000,skip,100,LR,2,liblinear,l2,0,Xy.txt,False,True,False

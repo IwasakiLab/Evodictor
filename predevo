@@ -1,0 +1,433 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+### Import modules ###
+from modules import Scaling, Prediction, PrintVersion
+from scipy import stats
+import argparse
+import csv
+import re
+import sys
+import numpy as np
+from sklearn.metrics import roc_auc_score
+import random
+######################
+
+#   functions
+
+def predevo(
+        input_file      ,
+        test_file       ,
+        normalize       ,
+        model           ,
+        CrossValidation ,
+        K               ,
+        pointbiserialr  ,
+        header          ,
+        args
+    ):
+
+    # read input file or stdin
+    if (input_file == None):
+        handle = sys.stdin
+    else:
+        handle = open(input_file,'r')
+    
+    X_list = []
+    y_list = []
+    features = None
+    
+    i = 0
+
+    if ( not header ):
+        print ("Please attach --header if there is a header row in the input file...")
+
+    for line in handle:
+
+        if ( header and i==0 ):
+
+            line     = line.split("\n")[0]
+            features = line.split("\t")[1].split(";") 
+        
+        else:
+        
+            line = line.split("\n")[0]
+            X    = [ float(xstr) for xstr in line.split("\t")[1].split(";") ]
+            y    = int(line.split("\t")[2])
+            
+            X_list.append(X)
+            y_list.append(y)
+
+        i += 1
+    
+    X_array = np.array(X_list)
+    y_array = np.array(y_list)
+
+    if (len(X_array) < 1):
+
+        print("Error: No data (len(X_array) < 1)")
+        return
+
+    # read test file or stdin
+    if test_file is not None:
+        handle = open(test_file,'r')
+    
+        Sp_test_list = []
+        X_test_list  = []
+        y_test_list  = []
+        
+        i = 0
+        for line in handle:
+
+            if ( header and i==0 ):
+
+                None
+            
+            else:
+
+                line = line.split("\n")[0]
+                Sp   = line.split("\t")[0]
+                X    = [ float(xstr) for xstr in line.split("\t")[1].split(";") ]
+                
+                Sp_test_list.append(Sp)
+                X_test_list.append(X)
+
+                
+                if len(line.split("\t"))==3: # if test file has a column of true labels
+                    y = int(line.split("\t")[2])
+                    y_test_list.append(y)
+
+            i += 1
+        
+        X_test_array = np.array(X_test_list)
+
+    # Input file normalization
+
+    if (normalize != "skip"):
+        X_array = Scaling.normalization(X_array, normalize)
+
+        if test_file is not None:
+            X_test_array = Scaling.normalization(X_test_array, normalize)
+    
+    # Coefficient calculation, model fitting, or cross validation
+    if (pointbiserialr):
+        r_list    = []
+        p_list    = []
+        if ( True ):
+            
+            for j in range(len(X_array[0,:])):
+                # Calculate point biserial coefficient
+                x_array = np.array(X_array[:,j])
+                r, p = stats.pointbiserialr(y_array, x_array)
+                r_list.append( r )
+                p_list.append( p )
+            for j, feature in enumerate(features):
+                if ( j < len(features) - 1 ):
+                    print(feature, end='\t')
+                else:
+                    print(feature, end='\n')
+            for j, r in enumerate(r_list):
+                if ( j < len(r_list) - 1 ):
+                    print(r, end='\t')
+                else:
+                    print(r, end='\n')
+            for j, p in enumerate(p_list):
+                if ( j < len(p_list) - 1 ):
+                    print(p, end='\t')
+                else:
+                    print(p, end='\n')
+            
+        else:
+            print("Error: Less than "+ str(K) + " positive instances")
+
+
+    elif (CrossValidation):
+
+        # Cross validation
+        if ( sum(y_array) >= K ):
+            score_list = Prediction.crossvalidation(
+                X_array = X_array,
+                y_array = y_array,
+                model   = model  , 
+                k       = K      ,
+                sampling    = args.sampling,
+                random_seed = args.seed,
+                # logistic regression args
+                lr_penalty = args.lr_penalty,
+                lr_solver  = args.lr_solver,
+                # random forest args
+                n_estimators = args.n_estimators, 
+                max_depth = args.max_depth,
+                # others
+                scoring = args.scoring,
+                n_permutation = args.permutation,
+                )
+            
+            if (args.scoring == "roc_curve"):
+                for block_x_y in score_list:
+                    print(block_x_y[0], block_x_y[1], block_x_y[2], sep = "\t") # "<test block number>\t<x coordinate of ROC curve>\t<y coordinate of ROC curve>"
+            else:
+                for score in score_list:
+                    print(score)
+        else:
+            print("Error: Less than "+ str(K) + " positive instances")
+    
+    else:
+        # Model fitting
+
+        if (sum(y_array) == 0):
+            print("Error: No positive instances in the training dataset")
+            return
+
+        feature_weight_list, intercept, discr = Prediction.fitting(
+            X_array = X_array, 
+            y_array = y_array, 
+            model   = model  ,
+            random_seed = args.seed,
+            #random forest
+            n_estimators = args.n_estimators, 
+            max_depth = args.max_depth,
+            lr_penalty = args.lr_penalty,
+            lr_solver  = args.lr_solver
+            )
+
+        # print fitted parameters
+        if test_file is None:
+
+            if (features==None):
+                features = [ "coeff"+str(i) for i in range(len(feature_weight_list))]
+            for feature in features:
+                print(feature, end='\t')
+            print("intercept")
+
+            for w in feature_weight_list:
+                print(w, end='\t')
+            print(intercept)
+        
+        # learn all data in the input file, then predict for all data in the test file
+        else:
+            y_test = y_test_list
+            if (len(y_test) > 0 and sum(y_test) == 0):
+                print("Error: No positive instances in the test dataset")
+                return
+
+            # prediction
+            y_prob = discr.predict_proba(X_test_array)[:, 1]
+            
+            if (len(y_test) == 0):
+                for Sp, class_prob in zip(Sp_test_list, y_prob):
+                    print(Sp, end='\t')
+                    print(class_prob, end='\n')
+            else:
+                if args.scoring == "roc_auc":
+                    auc = roc_auc_score(y_test, y_prob)
+                    print(auc, end='\n')
+                elif args.scoring == "roc_auc_pvalue":
+                    N_total= len(y_prob)
+                    y_prob_rank = np.argsort(np.argsort(y_prob))
+                    one_rank_list = []
+                    for i in range(len(y_prob)):
+                        if (y_test[i] == 1):
+                            one_rank_list.append(N_total - 1 - y_prob_rank[i])
+                    N_one = len(one_rank_list)
+                    AUC=Prediction.calc_auc(one_rank_list, N_total)
+                    random.seed(args.seed)
+                    count = 0
+                    y_prob = list(y_prob)
+                    for _ in range(args.permutation):
+                        random_one_rank_list = random.sample(list(range(N_total)), N_one)
+                        random_one_rank_list.sort()
+                        random_AUC           = Prediction.calc_auc(random_one_rank_list, N_total)
+                        if (random_AUC >= AUC):
+                            count += 1
+                    pvalue = count / args.permutation
+                    print(pvalue, end='\n')
+
+    # close file
+    handle.close()
+
+def argument_saver(args):
+    argname  = dir(args)
+    arg_pair = []
+    csv_L1   = []
+    csv_L2   = []
+    while argname != []:
+        arg = argname.pop()
+        find_dunder = re.match('^_', arg)
+        if not find_dunder:
+            csv_L1.append(arg)
+            csv_L2.append(args.__dict__[arg])
+        arg_pair = [csv_L1, csv_L2]
+
+        with open("args.csv", "wt") as fout:
+            csvout = csv.writer(fout)
+            csvout.writerows(arg_pair)
+
+
+#   interface
+if __name__ == "__main__":
+    # interface
+    parser = argparse.ArgumentParser(description='predevo', add_help=True)
+    
+    parser.add_argument(
+        "-v", "--version",
+        help="Print SyntrophyDetector version",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
+        "-p", "--print",
+        help="Print all arguments",
+        action='store_true',
+        default=False
+        )
+
+    parser.add_argument(
+        "-i", "--input",
+        help="[Required] Input file path", 
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-t", "--test",
+        help="Test data file path; if this option was specified, \
+              the file specified by -i is treated as a training dataset, \
+              then conduct prediction for the test data file specified by this option", 
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-n", "--normalize",
+        help="Conduct normalization (Permissive values: 'standard' (default), 'minmax', 'skip')", 
+        default="standard",
+        type=str,
+        )
+
+    parser.add_argument(
+        "-m", "--model",
+        help="[Required] Prediction model (Permissive values: 'LR', 'RF')", 
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "--pointbiserialr",
+        help="Calculates a point biserial correlation coefficient between \
+                each feature and y, and the associated p-value (if True, other options will be ignored)", 
+        action='store_true',
+        default=False
+        )
+    
+    # for cross validation
+    parser.add_argument(
+        "-c", "--cv",
+        help="Conduct stratified cross validation", 
+        action='store_true',
+        default=False
+        )
+
+    parser.add_argument(
+        "--hv",
+        help="Conduct stratified hold-out validation", 
+        action='store_true',
+        default=False
+        )
+    
+    parser.add_argument(
+        "-k", "--kfold",
+        help="K for k-fold stratified cross validation",
+        default=0,
+        type=int
+        )
+
+    parser.add_argument(
+        "-s", "--sampling",
+        help="Resampling the training dataset in cross validation. Permissive values: 'none' (default), 'under', 'over'",
+        default='none',
+        type=str
+        )
+    
+    parser.add_argument(
+        "--scoring",
+        help="Scoring of cross validation. Permissive values: 'roc_auc', 'roc_auc_pvalue', or 'roc_curve' (only with --cv)",
+        default='roc_auc',
+        type=str
+        )
+        
+    parser.add_argument(
+        "--permutation",
+        help="Number of permutations for calculating p-value of AUC in cross validation. This option is used only when '--scoring roc_auc_pvalue' is specified.",
+        default=100000,
+        type=int
+        )
+
+    parser.add_argument(
+        "-r", "--seed",
+        help="Random seed",
+        default=0,
+        type=int
+        )
+    
+    
+    parser.add_argument(
+        "--header",
+        help="Skip header row", 
+        action='store_true',
+        default=False
+    )
+
+    # for random forest
+
+    parser.add_argument(
+        "--n_estimators",
+        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.", 
+        type=int,
+        default=100
+    )
+
+    parser.add_argument(
+        "--max_depth",
+        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.", 
+        type=int,
+        default=2
+    )
+
+    parser.add_argument(
+        "--lr_penalty",
+        help="Regularization for logistic regression. Permissive values: ‘l1’, ‘l2’, ‘elasticnet’, ‘none’", 
+        type=str,
+        default='l2'
+    )
+
+    parser.add_argument(
+        "--lr_solver",
+        help="Solver for logistic regression. Permissive values: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’", 
+        type=str,
+        default='liblinear'
+    )
+    
+    # parse arguments
+    args = parser.parse_args()
+
+    # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
+
+    if args.print:
+        argument_saver(args)
+
+    predevo(
+        input_file      = args.input,
+        test_file       = args.test,
+        normalize       = args.normalize,
+        model           = args.model,
+        CrossValidation = args.cv,
+        K               = args.kfold,
+        pointbiserialr  = args.pointbiserialr,
+        header          = args.header,
+        args            = args,
+    )

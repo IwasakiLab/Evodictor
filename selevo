@@ -1,0 +1,303 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+### Import modules ###
+from modules import Scaling, FeatureSelection, PrintVersion
+from scipy import stats
+import argparse
+import csv
+import re
+import sys
+import numpy as np
+import copy
+######################
+
+#   functions
+
+def selevo(
+        input_file ,
+        normalize  ,
+        method     ,
+        k_list     ,
+        out1       ,
+        out2       ,
+        out3       ,
+        signed     ,
+        header     ,
+        args   
+    ):
+
+    # read input file or stdin
+    if (input_file == None):
+        handle = sys.stdin
+    else:
+        handle = open(input_file,'r')
+    
+    Sp_array = []
+    X_list   = []
+    y_list   = []
+    features = None
+    
+    i = 0
+    for line in handle:
+
+        if ( header and i==0 ):
+
+            line     = line.split("\n")[0]
+            features = line.split("\t")[1].split(";") 
+        
+        else:
+        
+            line = line.split("\n")[0]
+            sp   = line.split("\t")[0]
+            X    = [ float(xstr) for xstr in line.split("\t")[1].split(";") ]
+            y    = int(line.split("\t")[2])
+            
+            Sp_array.append(sp)
+            X_list.append(X)
+            y_list.append(y)
+
+        i += 1
+    
+    X_array = np.array(X_list)
+    y_array = np.array(y_list)
+
+    # Input file normalization
+
+    if (normalize != "skip"):
+        normX_array = Scaling.normalization(X_array, normalize)
+    else:
+        normX_array = copy.deepcopy(X_array)
+    
+    # feature selection
+    scores = FeatureSelection.FeatureSelection(normX_array, y_array, method, k_list[0], signed=signed, n_estimators = args.n_estimators, max_depth = args.max_depth)
+    
+    # record scores
+    L = len(features)
+    if out1 == 'stdout':
+        ost = sys.stdout
+    else:
+        ost = open(out1, 'w')
+    
+    for j, feature in enumerate(features):
+        if (j < L-1):
+            print(feature, end='\t', file = ost)
+        else:
+            print(feature, end='\n', file = ost)
+            
+    for i, value in enumerate(scores):
+        if (i < len(scores)-1):
+            print(value, end = '\t', file = ost)
+        else:
+            print(value, file = ost)
+
+    # ranking scores
+    abs_scores = [abs(score) for score in scores]
+    sorted_idx_list = np.argsort(abs_scores)[::-1]
+
+    # for each k, make a mask and a new extacted dataset
+    for k in k_list:
+        selected_idx_list = sorted_idx_list[:k]
+        mask = np.zeros(len(scores))
+        for selected_idx in selected_idx_list:
+            mask[selected_idx] = 1
+
+        S = sum(mask)
+
+        # output
+        for path, data_type in [(out2, 'mask'), (out3, 'newX')]:
+
+            if path == 'None':
+                None
+            
+            elif path == 'stdout':
+                ost = sys.stdout
+            else:
+                path = ".".join(path.split(".")[:-1]+[str(k)]+[path.split(".")[-1]])
+                ost = open(path, 'w')
+
+                if (data_type == 'mask'):
+                    for j, feature in enumerate(features):
+                        if (j < L-1):
+                            print(feature, end='\t', file = ost)
+                        else:
+                            print(feature, end='\n', file = ost)
+
+                    for j, value in enumerate(mask):
+                        if (j < L-1):
+                            if value:
+                                print(1, end = '\t', file = ost)
+                            else:
+                                print(0, end = '\t', file = ost)
+                        else:
+                            if value:
+                                print(1, file = ost)
+                            else:
+                                print(0, file = ost)
+                elif (data_type == 'newX'):
+                    
+                    print("Species", end = "\t", file = ost)
+                    n = 0
+                    for j, feature_label in enumerate(features):
+                        if (mask[j]):
+                            n += 1
+                            if n < S:
+                                print(feature_label, end = ";", file = ost)
+                            else:
+                                print(feature_label, end = "\t", file = ost)
+                    print("EventOccured", file = ost)
+
+                    
+                    for sp, X, y in zip (Sp_array, X_array, y_array):
+                        print(sp, end = "\t", file = ost)
+                        n = 0
+                        for j, x in enumerate(X):
+                            if (mask[j]):
+                                n += 1
+                                if n < S:
+                                    print(x, end = ";", file = ost)
+                                else:
+                                    print(x, end = "\t", file = ost)
+                        print(y, file = ost)
+                    
+
+    # close file
+    handle.close()
+    try: ost.close()
+    except: None
+
+def argument_saver(args):
+    argname = dir(args)
+    arg_pair = []
+    csv_L1 = []
+    csv_L2 = []
+    while argname != []:
+        arg = argname.pop()
+        find_dunder = re.match('^_', arg)
+        if not find_dunder:
+            csv_L1.append(arg)
+            csv_L2.append(args.__dict__[arg])
+        arg_pair = [csv_L1, csv_L2]
+
+        with open("args.csv", "wt") as fout:
+            csvout = csv.writer(fout)
+            csvout.writerows(arg_pair)
+
+
+#   interface
+if __name__ == "__main__":
+    # interface
+    parser = argparse.ArgumentParser(description='selevo', add_help=True)
+    
+    parser.add_argument(
+        "-v", "--version",
+        help="Print SyntrophyDetector version",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
+        "-p", "--print",
+        help="Print all arguments",
+        action='store_true',
+        default=False
+        )
+
+    parser.add_argument(
+        "-i", "--input",
+        help="Input file path", 
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "--scores", "--o1",
+        help="Output model parameter file path ('stdout' is also acceptable, 'None' inactivates output)", 
+        default='stdout',
+        type=str,
+        )
+    parser.add_argument(
+        "--mask",   "--o2",
+        help="Output selected parameters ('0': not selected, '1': selected)", 
+        default='stdout',
+        type=str,
+        )
+    parser.add_argument(
+        "--newXygen", "--o3",
+        help="Output renewed dataset file path", 
+        default='stdout',
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-n", "--normalize",
+        help="Conduct normalization (Permissive values: 'standard' (default), 'minmax', 'skip')", 
+        default="standard",
+        type=str,
+        )
+
+    parser.add_argument(
+        "-m", "--method",
+        help="Feature selection method (Permissive values: 'ANOVA', 'RandomForest')", 
+        default='ANOVA',
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-k",
+        help="Number of selected features (default: '5')",
+        default="5",
+        type=str
+        )
+    
+    parser.add_argument(
+        "--skip_header",
+        help="Skip header row", 
+        action='store_true',
+        default=False
+    )
+
+    parser.add_argument(
+        "--n_estimators",
+        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.", 
+        type=int,
+        default=100
+    )
+
+    parser.add_argument(
+        "--max_depth",
+        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.", 
+        type=int,
+        default=2
+    )
+
+    parser.add_argument(
+        "--signed",
+        help="Calculate signed importance value (positive or negative)", 
+        action='store_true',
+        default=False
+    )
+    
+    # parse arguments
+    args = parser.parse_args()
+
+    # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
+
+    if args.print:
+        argument_saver(args)
+
+    selevo(
+        input_file      = args.input,
+        normalize       = args.normalize,
+        method          = args.method,
+        k_list          = [int(k_str) for k_str in args.k.split(',')],
+        out1            = args.scores,
+        out2            = args.mask,
+        out3            = args.newXygen,
+        signed          = args.signed,
+        header          = args.skip_header,
+        args            = args    
+    )

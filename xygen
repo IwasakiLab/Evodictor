@@ -1,0 +1,269 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+### Import modules ###
+import argparse
+import csv
+import re
+import networkx as nx
+from Bio        import Phylo
+from modules    import mylink, CreateDataset, PrintVersion
+######################
+
+#   functions
+
+def xygen(
+        sparsematrix_file_for_X,
+        sparsematrix_file_for_y,
+        targetelem,
+        tree_file,
+        predictor_file,
+        mode,
+        gain_or_loss,
+        show_extant
+    ):
+    
+    # read 
+
+
+    sp2xelem2xweight = {}
+
+    with open(sparsematrix_file_for_X, 'r') as ist:
+
+        for line in ist:
+
+            if (line[0] != "#"):
+                
+                words = line.split()
+
+                elem, sp, xweight = words[0], words[1], float(words[2])
+
+                if (sp not in sp2xelem2xweight.keys()):
+                    
+                    sp2xelem2xweight[sp] = {}
+                
+                if (elem not in sp2xelem2xweight[sp].keys()):
+                    
+                    sp2xelem2xweight[sp][elem] = {}
+                
+                sp2xelem2xweight[sp][elem] = xweight # xweight == 0, 0.5, or 1
+    
+    sp2yelem2yweight = {}
+
+    with open(sparsematrix_file_for_y, 'r') as ist:
+
+        for line in ist:
+
+            if (line[0] != "#"):
+                
+                words = line.split()
+
+                elem, sp, yweight = words[0], words[1], float(words[2])
+
+                if (sp not in sp2yelem2yweight.keys()):
+                    
+                    sp2yelem2yweight[sp] = {}
+                
+                if (elem not in sp2yelem2yweight[sp].keys()):
+                    
+                    sp2yelem2yweight[sp][elem] = {}
+                
+                sp2yelem2yweight[sp][elem] = yweight # yweight == 0 ~ 1
+
+    tree = Phylo.read(tree_file, 'newick')
+    
+    predictor2elemlist = mylink.make_hash3(
+        predictor_file, 
+        key_column   = 0, 
+        value_column = 1, 
+        reverse      = False,
+        delim        = "\t",
+        value_type   = "str"
+        )
+    
+    predictor_list   = list(sorted(predictor2elemlist.keys()))
+
+    # create dataset
+
+    if (show_extant):
+        ExSpX_list = CreateDataset.listup_extant_X( # ExSpX_list = [(name, [float, float, ...]), (), (), ...]
+            targetelem          = targetelem,
+            sp2xelem2xweight    = sp2xelem2xweight, 
+            tree                = tree, 
+            predictor2elemlist  = predictor2elemlist, 
+            predictor_list      = predictor_list,
+            mode                = mode
+            )
+
+        # Output
+
+        # header
+        print("Species", end = "\t")
+        for i, predictor_label in enumerate(predictor_list):
+            if ( i != len(predictor_list) - 1 ):
+                print(predictor_label, end = ";")
+            else:
+                print(predictor_label, end = "\n")
+        
+        # list up X and y
+        for Sp, X in ExSpX_list: # Xylist = [(name, [float, float, ...], int), (), (), ...]
+            print(Sp, end = "\t")
+            for i, x in enumerate(X):
+                if ( i != len(X) - 1 ):
+                    print (x, end = ";")
+                else:
+                    print (x, end = "\n")
+        
+        return 
+
+    else:    
+        SpXylist = CreateDataset.create_dataset(
+            targetelem         = targetelem,
+            sp2xelem2xweight   = sp2xelem2xweight, 
+            sp2yelem2yweight   = sp2yelem2yweight, 
+            tree               = tree, 
+            predictor2elemlist = predictor2elemlist, 
+            predictor_list     = predictor_list,
+            mode               = mode, 
+            gain_or_loss       = gain_or_loss
+            )
+        
+        # Output
+
+        # header
+        print("Species", end = "\t")
+        for i, predictor_label in enumerate(predictor_list):
+            if ( i != len(predictor_list) - 1 ):
+                print(predictor_label, end = ";")
+            else:
+                print(predictor_label, end = "\t")
+        print("EventOccured")
+        
+        # list up X and y
+        for Sp, X, y in SpXylist: # Xylist = [(name, [float, float, ...], int), (), (), ...]
+            print(Sp, end = "\t")
+            for i, x in enumerate(X):
+                if ( i != len(X) - 1 ):
+                    print (x, end = ";")
+                else:
+                    print (x, end = "\t")
+            print(y)
+        
+        return
+
+def argument_saver(args):
+    argname = dir(args)
+    arg_pair = []
+    csv_L1 = []
+    csv_L2 = []
+    while argname != []:
+        arg = argname.pop()
+        find_dunder = re.match('^_', arg)
+        if not find_dunder:
+            csv_L1.append(arg)
+            csv_L2.append(args.__dict__[arg])
+        arg_pair = [csv_L1, csv_L2]
+
+        with open("args.csv", "wt") as fout:
+            csvout = csv.writer(fout)
+            csvout.writerows(arg_pair)
+
+
+#   interface
+if __name__ == "__main__":
+    # interface
+    parser = argparse.ArgumentParser(description='xygen', add_help=True)
+    
+    parser.add_argument(
+        "-v", "--version",
+        help="Print EvolutionPredictor version",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
+        "-p", "--print",
+        help="Print all arguments",
+        action='store_true',
+        default=False
+        )
+    
+    parser.add_argument(
+        "--target",
+        help="Prediction target (eg. 'R00001')",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-X", "--sparse_X",
+        help="[Required] Sparse matrix file path for input features X",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-y", "--sparse_y",
+        help="[Required] Sparse matrix file path for output y",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-t", "--tree",
+        help="Tree file path",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-m", "--mode",
+        help="Mode of dataset generator (default: 'define')",
+        default='define',
+        type=str,
+        )
+    
+    parser.add_argument(
+        "--predictor",
+        help="Predictor definition file path", # List of <Predictor No.>\t<KO name>
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "--gl",
+        help="Specify 'gain' or 'loss'", # List of <Predictor No.>\t<KO name>
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "--ex",
+        help="Print only X for extant species", # List of <Predictor No.>\t<KO name>
+        action='store_true',
+        default=False,
+        )
+    
+    
+    # parse arguments
+    args = parser.parse_args()
+
+    # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
+
+    if args.print:
+        argument_saver(args)
+
+    xygen(
+        sparsematrix_file_for_X = args.sparse_X,
+        sparsematrix_file_for_y = args.sparse_y,
+        tree_file               = args.tree,
+        predictor_file          = args.predictor,
+        targetelem              = args.target,
+        mode                    = args.mode,
+        gain_or_loss            = args.gl,
+        show_extant             = args.ex
+        )

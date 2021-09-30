@@ -64,6 +64,11 @@ def selevo(
     y_array = np.array(y_list)
     L = len(features)
 
+    # check if there are positive and negative instances
+    if not (0 in set(y_array) and 1 in set(y_array)):
+        print("Positive or negative instance is missing!")
+        return
+
     # variance filter
     constant_filter = VarianceThreshold(threshold=0)
     constant_filter.fit(X_array)

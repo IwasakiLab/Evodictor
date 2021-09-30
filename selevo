@@ -3,6 +3,7 @@
 
 ### Import modules ###
 from modules import Scaling, FeatureSelection, PrintVersion
+from sklearn.feature_selection import VarianceThreshold
 from scipy import stats
 import argparse
 import csv
@@ -61,19 +62,35 @@ def selevo(
     
     X_array = np.array(X_list)
     y_array = np.array(y_list)
+    L = len(features)
+
+    # variance filter
+    constant_filter = VarianceThreshold(threshold=0)
+    constant_filter.fit(X_array)
+    X_array_filtered = constant_filter.transform(X_array)
+
+    ### From here, only filtered features are treated
 
     # Input file normalization
-
     if (normalize != "skip"):
-        normX_array = Scaling.normalization(X_array, normalize)
+        normX_array = Scaling.normalization(X_array_filtered, normalize)
     else:
-        normX_array = copy.deepcopy(X_array)
-    
+        normX_array = copy.deepcopy(X_array_filtered)
+
     # feature selection
-    scores = FeatureSelection.FeatureSelection(normX_array, y_array, method, k_list[0], signed=signed, n_estimators = args.n_estimators, max_depth = args.max_depth)
+    scores_filtered = FeatureSelection.FeatureSelection(normX_array, y_array, method, k_list[0], signed=signed, n_estimators = args.n_estimators, max_depth = args.max_depth)
+    
+    # Re-include features filtered out
+    scores = np.zeros(L)
+    idx = 0
+    for j, variance in enumerate(constant_filter.variances_):
+        if (variance != 0):
+            scores[j] = scores_filtered[idx]
+            idx += 1
+
+    ### Until here, only filtered features are treated
     
     # record scores
-    L = len(features)
     if out1 == 'stdout':
         ost = sys.stdout
     else:
@@ -110,11 +127,12 @@ def selevo(
             if path == 'None':
                 None
             
-            elif path == 'stdout':
-                ost = sys.stdout
             else:
-                path = ".".join(path.split(".")[:-1]+[str(k)]+[path.split(".")[-1]])
-                ost = open(path, 'w')
+                if path == 'stdout':
+                    ost = sys.stdout
+                else:
+                    path = ".".join(path.split(".")[:-1]+[str(k)]+[path.split(".")[-1]])
+                    ost = open(path, 'w')
 
                 if (data_type == 'mask'):
                     for j, feature in enumerate(features):
@@ -122,7 +140,6 @@ def selevo(
                             print(feature, end='\t', file = ost)
                         else:
                             print(feature, end='\n', file = ost)
-
                     for j, value in enumerate(mask):
                         if (j < L-1):
                             if value:
@@ -135,7 +152,6 @@ def selevo(
                             else:
                                 print(0, file = ost)
                 elif (data_type == 'newX'):
-                    
                     print("Species", end = "\t", file = ost)
                     n = 0
                     for j, feature_label in enumerate(features):
@@ -146,8 +162,6 @@ def selevo(
                             else:
                                 print(feature_label, end = "\t", file = ost)
                     print("EventOccured", file = ost)
-
-                    
                     for sp, X, y in zip (Sp_array, X_array, y_array):
                         print(sp, end = "\t", file = ost)
                         n = 0
@@ -159,7 +173,7 @@ def selevo(
                                 else:
                                     print(x, end = "\t", file = ost)
                         print(y, file = ost)
-                    
+                        
 
     # close file
     handle.close()
@@ -218,13 +232,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mask",   "--o2",
         help="Output selected parameters ('0': not selected, '1': selected)", 
-        default='stdout',
+        default='None',
         type=str,
         )
     parser.add_argument(
         "--newXygen", "--o3",
         help="Output renewed dataset file path", 
-        default='stdout',
+        default='None',
         type=str,
         )
     

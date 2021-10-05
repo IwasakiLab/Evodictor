@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "-m", "--method",
-        help="Feature selection method (Permissive values: 'ANOVA', 'RandomForest')", 
+        help="Feature selection method (Permissive values: 'ANOVA', 'RF', 'MI')", 
         default='ANOVA',
         type=str,
         )

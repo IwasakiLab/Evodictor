@@ -70,6 +70,15 @@ def selevo(
         mask   = [int(feature in selected_feature_set) for feature in features]
     
     else:
+        # check if there are positive and negative instances
+        if not (0 in set(y_array) and 1 in set(y_array)):
+            print("Positive or negative instance is missing!")
+            return
+
+        # variance filter
+        constant_filter = VarianceThreshold(threshold=0)
+        constant_filter.fit(X_array)
+        X_array_filtered = constant_filter.transform(X_array)
 
         # variance filter
         constant_filter = VarianceThreshold(threshold=0)

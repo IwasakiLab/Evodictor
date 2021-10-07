@@ -40,7 +40,7 @@ def predevo(
     i = 0
 
     if ( not header ):
-        print ("Please attach --header if there is a header row in the input file...")
+        print ("Please attach --header if there is a header row in the input file...", file = sys.stderr)
 
     for line in handle:
 

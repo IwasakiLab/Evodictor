@@ -21,7 +21,8 @@ def xygen(
         predictor_file,
         mode,
         gain_or_loss,
-        show_extant
+        show_extant,
+        args
     ):
     
     # read 
@@ -126,7 +127,8 @@ def xygen(
             predictor2elemlist = predictor2elemlist, 
             predictor_list     = predictor_list,
             mode               = mode, 
-            gain_or_loss       = gain_or_loss
+            gain_or_loss       = gain_or_loss,
+            args               = args
             )
         
         # Output
@@ -243,6 +245,12 @@ if __name__ == "__main__":
         action='store_true',
         default=False,
         )
+
+    parser.add_argument(
+        "--branch_name_format",
+        help="Set the format of branch name. Permissive values: 'parent' or 'child'", # List of <Predictor No.>\t<KO name>
+        default='parent',
+        )
     
     
     # parse arguments
@@ -265,5 +273,6 @@ if __name__ == "__main__":
         targetelem              = args.target,
         mode                    = args.mode,
         gain_or_loss            = args.gl,
-        show_extant             = args.ex
+        show_extant             = args.ex,
+        args                    = args
         )

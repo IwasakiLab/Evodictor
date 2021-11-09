@@ -9,7 +9,8 @@ def create_dataset(
     predictor2elemlist, 
     predictor_list,
     mode, 
-    gain_or_loss
+    gain_or_loss,
+    args
     ):
 
     zero = 0.00000001
@@ -61,7 +62,8 @@ def create_dataset(
                 else:
                     y = 0
                 
-                SpXylist.append((node.name, X, y))
+                if   args.branch_name_format == 'parent': SpXylist.append((node.name, X, y))
+                elif args.branch_name_format == 'child': SpXylist.append((child.name, X, y))
 
     return SpXylist
 

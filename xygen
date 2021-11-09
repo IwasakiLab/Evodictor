@@ -43,9 +43,9 @@ def xygen(
                     
                     sp2xelem2xweight[sp] = {}
                 
-                if (elem not in sp2xelem2xweight[sp].keys()):
+                #if (elem not in sp2xelem2xweight[sp].keys()):
                     
-                    sp2xelem2xweight[sp][elem] = {}
+                #    sp2xelem2xweight[sp][elem] = {}
                 
                 sp2xelem2xweight[sp][elem] = xweight # xweight == 0, 0.5, or 1
     
@@ -65,9 +65,9 @@ def xygen(
                     
                     sp2yelem2yweight[sp] = {}
                 
-                if (elem not in sp2yelem2yweight[sp].keys()):
+                #if (elem not in sp2yelem2yweight[sp].keys()):
                     
-                    sp2yelem2yweight[sp][elem] = {}
+                #    sp2yelem2yweight[sp][elem] = {}
                 
                 sp2yelem2yweight[sp][elem] = yweight # yweight == 0 ~ 1
 

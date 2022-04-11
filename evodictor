@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+### Import modules ###
+from ensurepip import version
+import subprocess
+import sys
+######################
+
+Version = 0.0
+
+#   interface
+if __name__ == "__main__":
+
+    args = sys.argv
+
+    try:
+
+        if   args[1] == "generate":
+
+            software = "xygen"
+
+        elif args[1] == "select":
+
+            software = "selevo"
+
+        elif args[1] == "predict":
+
+            software = "predevo"
+    
+    except:
+
+        software = ""
+
+    command = " ".join([software]+args[2:])
+
+    print("Evodictor "+str(Version))
+    
+    print("Command: "+" ".join(args))
+
+    if software != "":
+        subprocess.call(command+"|sed 's/"+software+"/evodictor "+args[1]+"/g'", shell=True)
+    else:
+        print("Available commands:\n\tevodictor generate\n\tevodictor select\n\tevodictor predict")
+        print("Check options by 'evodictor [function] -h'")

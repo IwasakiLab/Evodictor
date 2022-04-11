@@ -175,14 +175,8 @@ def argument_saver(args):
 #   interface
 if __name__ == "__main__":
     # interface
-    parser = argparse.ArgumentParser(description='xygen', add_help=True)
+    parser = argparse.ArgumentParser(description='xygen', add_help=False)
     
-    parser.add_argument(
-        "-v", "--version",
-        help="Print EvolutionPredictor version",
-        action='store_true',
-        default=False
-        )
     parser.add_argument(
         "-p", "--print",
         help="Print all arguments",

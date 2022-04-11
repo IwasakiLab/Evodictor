@@ -270,12 +270,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='predevo', add_help=True)
     
     parser.add_argument(
-        "-v", "--version",
-        help="Print SyntrophyDetector version",
-        action='store_true',
-        default=False
-        )
-    parser.add_argument(
         "-p", "--print",
         help="Print all arguments",
         action='store_true',

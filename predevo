@@ -407,10 +407,6 @@ if __name__ == "__main__":
 
     # to show version
 
-    if args.version:
-        PrintVersion.print_version()
-        exit()
-
     if args.print:
         argument_saver(args)
 

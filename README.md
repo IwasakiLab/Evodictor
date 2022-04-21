@@ -46,9 +46,22 @@ The evodictor contains an example input file in the `examples` directory so that
 Generate dataset for machine learning from a ancestral state reconstruction result and a phylogenetic tree
 
 ```shell
+evodictor generate --target K00005 -X OG_node_state.txt -y OG_node_state.txt -t example.tree --predictor feature_OG.txt --gl gain > branch_X_y.txt
 ```
 
 Or you can type "xygen" instead of "evodictor generate".
+
+Input:
+
+[`OG_node_state.txt`](): The state of possession of an ortholog group (OG) for tips and internal nodes of `example.tree`. States not written in this file will be treated as 0.
+
+[`example.tree`](): A phylogenetic tree in a newick format.
+
+[`feature_OG.txt`](): Correspondence of each feature (M00001, M00002, ...) and ortholog groups (K00001, K00002, ...). One feature corresponds to multiple ortholog groups.
+
+Output:
+
+[`branch_X_y.txt`](): List of input (X) and output (y) for every branch in `example.tree` represented by the name of its child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
 
 **Example 2**
 

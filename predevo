@@ -40,7 +40,7 @@ def predevo(
     i = 0
 
     if ( not header ):
-        print ("Please attach --header if there is a header row in the input file...", file = sys.stderr)
+        print ("Please attach --header if there is a header row in the input file...")
 
     for line in handle:
 
@@ -270,6 +270,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='predevo', add_help=True)
     
     parser.add_argument(
+        "-v", "--version",
+        help="Print SyntrophyDetector version",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
         "-p", "--print",
         help="Print all arguments",
         action='store_true',
@@ -406,6 +412,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
 
     if args.print:
         argument_saver(args)

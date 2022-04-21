@@ -21,8 +21,7 @@ def xygen(
         predictor_file,
         mode,
         gain_or_loss,
-        show_extant,
-        args
+        show_extant
     ):
     
     # read 
@@ -49,6 +48,7 @@ def xygen(
                 #    sp2xelem2xweight[sp][elem] = {}
                 
                 sp2xelem2xweight[sp][elem] = xweight # xweight == 0, 0.5, or 1
+
     
     sp2yelem2yweight = {}
 
@@ -127,8 +127,7 @@ def xygen(
             predictor2elemlist = predictor2elemlist, 
             predictor_list     = predictor_list,
             mode               = mode, 
-            gain_or_loss       = gain_or_loss,
-            args               = args
+            gain_or_loss       = gain_or_loss
             )
         
         # Output
@@ -175,8 +174,14 @@ def argument_saver(args):
 #   interface
 if __name__ == "__main__":
     # interface
-    parser = argparse.ArgumentParser(description='xygen', add_help=False)
+    parser = argparse.ArgumentParser(description='xygen', add_help=True)
     
+    parser.add_argument(
+        "-v", "--version",
+        help="Print EvolutionPredictor version",
+        action='store_true',
+        default=False
+        )
     parser.add_argument(
         "-p", "--print",
         help="Print all arguments",
@@ -239,18 +244,16 @@ if __name__ == "__main__":
         action='store_true',
         default=False,
         )
-
-    parser.add_argument(
-        "--branch_name_format",
-        help="Set the format of branch name. Permissive values: 'parent' or 'child'", # List of <Predictor No.>\t<KO name>
-        default='parent',
-        )
     
     
     # parse arguments
     args = parser.parse_args()
 
     # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
 
     if args.print:
         argument_saver(args)
@@ -263,6 +266,5 @@ if __name__ == "__main__":
         targetelem              = args.target,
         mode                    = args.mode,
         gain_or_loss            = args.gl,
-        show_extant             = args.ex,
-        args                    = args
+        show_extant             = args.ex
         )

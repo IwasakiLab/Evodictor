@@ -41,7 +41,7 @@ def FeatureSelection(
                 else:
                     scores[j] = -1 * scores[j]
     
-    elif (method == "RF"):
+    elif (method == "RandomForest"):
 
         from sklearn.feature_selection import SelectFromModel
         from sklearn.ensemble import RandomForestClassifier
@@ -55,17 +55,9 @@ def FeatureSelection(
         selector.fit(X_array, y_array)
         scores = selector.estimator_.feature_importances_
 
-    elif (method == "MI"):
-
-        from sklearn.feature_selection import SelectKBest
-        from sklearn.feature_selection import mutual_info_classif
-        
-        selector = SelectKBest(score_func=mutual_info_classif, k=k) 
-        selector.fit(X_array, y_array)
-        scores   = selector.scores_
-
     # convert nan into 0
     for i in range(len(scores)):
         if np.isnan(scores[i]):
             scores[i] = 0
     return scores#, mask
+

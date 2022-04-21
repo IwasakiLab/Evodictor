@@ -13,7 +13,7 @@
 
 <h4>Required</h4>
 
-1. Python3 (version: 3.7.0 or later) with scipy, numpy, and sklearn modules *required*
+1. Python3 (version: 3.7.0 or later) with biopython, scipy, numpy, imblearn, and scikit-learn modules *required*
 
 ### Software installation
 

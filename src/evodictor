@@ -7,7 +7,7 @@ import subprocess
 import sys
 ######################
 
-Version = 0.0
+Version = "1.0.0"
 
 #   interface
 if __name__ == "__main__":
@@ -27,6 +27,10 @@ if __name__ == "__main__":
         elif args[1] == "predict":
 
             software = "predevo"
+        
+        else:
+
+            software = ""
     
     except:
 
@@ -34,7 +38,7 @@ if __name__ == "__main__":
 
     command = " ".join([software]+args[2:])
 
-    print("Evodictor "+str(Version))
+    print("Evodictor "+Version)
     
     print("Command: "+" ".join(args))
 

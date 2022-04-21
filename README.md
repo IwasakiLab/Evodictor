@@ -1,13 +1,13 @@
-<h2>Evolution Prediction Toolkit and User Manual</h2>
+<h2>Evodictor and User Manual</h2>
 
 
-### Overview of Evolution Prediction Toolkit
+### Overview of Evodictor
 
-**Evolutin Prediction Toolkit** is a software package for predicting evolution of given traits from a species-trait table and a phylogenetic tree
+**Evodictor** is a software package for predicting evolution of given traits from a species-trait table and a phylogenetic tree
 
 ### Supported Environment
 
-1. **Evolutin Prediction Toolkit** can be executed on Linux OS / Mac
+1. **Evodictor** can be executed on Linux OS / Mac
 
 ### Software Dependency
 
@@ -20,7 +20,7 @@
 Each installation step will take less than ~1 min
 
 
-#### Installation of Evolutin Prediction Toolkit # Currently Unavailable
+#### Installation of Evodictor # Currently Unavailable
 
 
 1. Download Evolution Prediction Toolkit by

@@ -20,10 +20,10 @@
 Each installation step will take less than ~1 min
 
 
-#### Installation of Evodictor # Currently Unavailable
+#### Installation of Evodictor
 
 
-1. Download Evolution Prediction Toolkit by
+1. Download Evodictor by
 
    ```shell
     git clone 
@@ -61,7 +61,7 @@ Input:
 
 Output:
 
-[`branch_X_y.txt`](): List of input (X) and output (y) for every branch in `example.tree` represented by the name of its child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
+[`branch_X_y.txt`](): List of input (X) and output (y) for every branch in `example.tree`. Branches are represented by the names of their child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
 
 **Example 2**
 

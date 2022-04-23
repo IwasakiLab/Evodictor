@@ -43,7 +43,7 @@ The evodictor contains an example input file in the `examples` directory so that
 
 **Example 1**
 
-Generate dataset for machine learning from a ancestral state reconstruction result and a phylogenetic tree
+Generate dataset for machine learning from a ancestral state reconstruction result and a phylogenetic tree to predict gene gain of an ortholog group ("K00005")
 
 ```shell
 evodictor generate --target K00005 -X OG_node_state.txt -y OG_node_state.txt -t example.tree --predictor feature_OG.txt --gl gain > branch_X_y.txt
@@ -53,46 +53,48 @@ Or you can type "xygen" instead of "evodictor generate".
 
 Input:
 
-[`OG_node_state.txt`](): The state of possession of an ortholog group (OG) for tips and internal nodes of `example.tree`. States not written in this file will be treated as 0.
+[`OG_node_state.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/OG_node_state.txt): The state of possession of an ortholog group (OG) for tips and internal nodes of `example.tree`. States not written in this file will be treated as 0.
 
-[`example.tree`](): A phylogenetic tree in a newick format.
+[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a newick format.
 
-[`feature_OG.txt`](): Correspondence of each feature (M00001, M00002, ...) and ortholog groups (K00001, K00002, ...). One feature corresponds to multiple ortholog groups.
+[`feature_OG.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/feature_OG.txt): Correspondence of each feature (M00001, M00002, ...) and ortholog groups (K00001, K00002, ...). One feature corresponds to multiple ortholog groups.
 
 Output:
 
-[`branch_X_y.txt`](): List of input (X) and output (y) for every branch in `example.tree`. Branches are represented by the names of their child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
+[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt): List of input (X) and output (y) for every branch in `example.tree`. Branches are represented by the names of their child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
 
 **Example 2**
 
-Select input features based on ANOVA F-value
+Select top-20 input features based on ANOVA F-value to predict gene gain of an ortholog group ("K00005")
 
 ```shell
-selevo -i Xy.txt --skip_header --o1 $(pwd)/result.o1.txt --o2 $(pwd)/result.o2.txt --o3 $(pwd)/result.o3.txt -k 5
+evodictor select -i branch_X_y.txt --skip_header --o1 feature_importance.txt --o2 selection_result.txt --o3 branch_X_y.selected.txt -k 20
 ```
+
+Or you can type "selevo" instead of "evodictor select".
 
 Input:
 
-[`Xy.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/Xy.txt)
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/branch_X_y.selected.20.txt)
 
 Output:
 
-[`result.o1.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o1.txt) : Importance of each feature
+[`feature_importance.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/feature_importance.txt) : Importance of every feature
 
-[`result.o2.5.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o2.5.txt) : Binary values indicating whether each feature was selected or not (1: selected, 0: not selected)
+[`selection_result.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/selection_result.20.txt) : Binary values indicating whether each feature was selected or not (1: selected, 0: not selected)
 
-[`result.o3.5.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o3.5.txt) : Input dataset for predevo which includes only selected features  
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.txt) : Input dataset for "evodictor predict" which includes only selected features  
 
 **Example 3**
 
-Conduct five-fold cross validation of gene gain prediction for an ortholog group (K00005)
+Conduct five-fold cross validation of gene gain prediction for an ortholog group ("K00005")
 
 ```shell
 ```
 
 **Example 4**
 
-Predict gene gain probability of every extant species for an ortholog group (K00005)
+Predict gene gain probability of every extant species for an ortholog group ("K00005")
 
 ```shell
 ```

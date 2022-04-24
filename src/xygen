@@ -178,20 +178,20 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-v", "--version",
-        help="Print EvolutionPredictor version",
+        help="Print evodictor version (default: False)",
         action='store_true',
         default=False
         )
     parser.add_argument(
         "-p", "--print",
-        help="Print all arguments",
+        help="Print all arguments (default: False)",
         action='store_true',
         default=False
         )
     
     parser.add_argument(
         "--target",
-        help="Prediction target (eg. 'R00001')",
+        help="[Required] Prediction target (eg. 'R00001')",
         default=None,
         type=str,
         )
@@ -212,7 +212,21 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-t", "--tree",
-        help="Tree file path",
+        help="[Required] Tree file path",
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "--predictor",
+        help="[Required] Predictor definition file path", # List of <Predictor No.>\t<KO name>
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "--gl",
+        help="[Required] Specify 'gain' or 'loss'", # List of <Predictor No.>\t<KO name>
         default=None,
         type=str,
         )
@@ -225,22 +239,8 @@ if __name__ == "__main__":
         )
     
     parser.add_argument(
-        "--predictor",
-        help="Predictor definition file path", # List of <Predictor No.>\t<KO name>
-        default=None,
-        type=str,
-        )
-    
-    parser.add_argument(
-        "--gl",
-        help="Specify 'gain' or 'loss'", # List of <Predictor No.>\t<KO name>
-        default=None,
-        type=str,
-        )
-    
-    parser.add_argument(
         "--ex",
-        help="Print only X for extant species", # List of <Predictor No.>\t<KO name>
+        help="Print only X for extant species (default: False)", # List of <Predictor No.>\t<KO name>
         action='store_true',
         default=False,
         )

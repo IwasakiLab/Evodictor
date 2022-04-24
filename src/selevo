@@ -196,7 +196,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-v", "--version",
-        help="Print SyntrophyDetector version",
+        help="Print evodictor version",
         action='store_true',
         default=False
         )
@@ -209,75 +209,75 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "-i", "--input",
-        help="Input file path", 
+        help="[required] Input file path", 
         default=None,
         type=str,
         )
 
     parser.add_argument(
+        "-m", "--method",
+        help="[required] Feature selection method (Permissive values: 'ANOVA', 'RandomForest')", 
+        default='ANOVA',
+        type=str,
+        )
+
+    parser.add_argument(
         "--scores", "--o1",
-        help="Output model parameter file path ('stdout' is also acceptable, 'None' inactivates output)", 
+        help="Output feature importance file path ('stdout' is also acceptable, 'None' inactivates output) (default: stdout)", 
         default='stdout',
         type=str,
         )
     parser.add_argument(
         "--mask",   "--o2",
-        help="Output selected parameters ('0': not selected, '1': selected)", 
+        help="Output selected parameters ('0': not selected, '1': selected) (default: stdout)", 
         default='stdout',
         type=str,
         )
     parser.add_argument(
         "--newXygen", "--o3",
-        help="Output renewed dataset file path", 
+        help="Output a dataset file with selected features (default: stdout)", 
         default='stdout',
         type=str,
         )
     
     parser.add_argument(
         "-n", "--normalize",
-        help="Conduct normalization (Permissive values: 'standard' (default), 'minmax', 'skip')", 
+        help="Conduct normalization (Permissive values: 'standard', 'minmax', 'skip') (default: 'standard')", 
         default="standard",
-        type=str,
-        )
-
-    parser.add_argument(
-        "-m", "--method",
-        help="Feature selection method (Permissive values: 'ANOVA', 'RandomForest')", 
-        default='ANOVA',
         type=str,
         )
     
     parser.add_argument(
         "-k",
-        help="Number of selected features (default: '5')",
+        help="Number of selected features (default: 5)",
         default="5",
         type=str
         )
     
     parser.add_argument(
         "--skip_header",
-        help="Skip header row", 
+        help="Skip header row (default: False)", 
         action='store_true',
         default=False
     )
 
     parser.add_argument(
         "--n_estimators",
-        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.", 
+        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection. (default: 100)", 
         type=int,
         default=100
     )
 
     parser.add_argument(
         "--max_depth",
-        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.", 
+        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection. (default: 2)", 
         type=int,
         default=2
     )
 
     parser.add_argument(
         "--signed",
-        help="Calculate signed importance value (positive or negative)", 
+        help="Calculate signed importance value (positive or negative) (default: False)", 
         action='store_true',
         default=False
     )

@@ -109,33 +109,33 @@ evodictor predict -i branch_X_y.selected.20.txt -c -k 3 -m LR --header > cross_v
 
 ```
 usage: evodictor generate [-h] [-v] [-p] [--target TARGET] [-X SPARSE_X] [-y SPARSE_Y]
-             [-t TREE] [-m MODE] [--predictor PREDICTOR] [--gl GL] [--ex]
+             [-t TREE] [--predictor PREDICTOR] [--gl GL] [-m MODE] [--ex]
 
 evodictor generate
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print EvolutionPredictor version
-  -p, --print           Print all arguments
-  --target TARGET       Prediction target (eg. 'R00001')
+  -v, --version         Print evodictor version (default: False)
+  -p, --print           Print all arguments (default: False)
+  --target TARGET       [Required] Prediction target (eg. 'R00001')
   -X SPARSE_X, --sparse_X SPARSE_X
                         [Required] Sparse matrix file path for input features
                         X
   -y SPARSE_Y, --sparse_y SPARSE_Y
                         [Required] Sparse matrix file path for output y
-  -t TREE, --tree TREE  Tree file path
-  -m MODE, --mode MODE  Mode of dataset generator (default: 'define')
+  -t TREE, --tree TREE  [Required] Tree file path
   --predictor PREDICTOR
-                        Predictor definition file path
-  --gl GL               Specify 'gain' or 'loss'
-  --ex                  Print only X for extant species
+                        [Required] Predictor definition file path
+  --gl GL               [Required] Specify 'gain' or 'loss'
+  -m MODE, --mode MODE  Mode of dataset generator (default: 'define')
+  --ex                  Print only X for extant species (default: False)
 ```
 
 **evodictor select / selevo**
 
 ```
-usage: evodictor select [-h] [-v] [-p] [-i INPUT] [--scores SCORES] [--mask MASK]
-              [--newXygen NEWXYGEN] [-n NORMALIZE] [-m METHOD] [-k K]
+usage: evodictor select [-h] [-v] [-p] [-i INPUT] [-m METHOD] [--scores SCORES]
+              [--mask MASK] [--newXygen NEWXYGEN] [-n NORMALIZE] [-k K]
               [--skip_header] [--n_estimators N_ESTIMATORS]
               [--max_depth MAX_DEPTH] [--signed]
 
@@ -143,41 +143,44 @@ evodictor select
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print SyntrophyDetector version
+  -v, --version         Print evodictor version
   -p, --print           Print all arguments
   -i INPUT, --input INPUT
-                        Input file path
+                        [required] Input file path
+  -m METHOD, --method METHOD
+                        [required] Feature selection method (Permissive
+                        values: 'ANOVA', 'RandomForest')
   --scores SCORES, --o1 SCORES
-                        Output model parameter file path ('stdout' is also
-                        acceptable, 'None' inactivates output)
+                        Output feature importance file path ('stdout' is also
+                        acceptable, 'None' inactivates output) (default:
+                        stdout)
   --mask MASK, --o2 MASK
                         Output selected parameters ('0': not selected, '1':
-                        selected)
+                        selected) (default: stdout)
   --newXygen NEWXYGEN, --o3 NEWXYGEN
-                        Output renewed dataset file path
+                        Output a dataset file with selected features (default:
+                        stdout)
   -n NORMALIZE, --normalize NORMALIZE
-                        Conduct normalization (Permissive values: 'standard'
-                        (default), 'minmax', 'skip')
-  -m METHOD, --method METHOD
-                        Feature selection method (Permissive values: 'ANOVA',
-                        'RandomForest')
-  -k K                  Number of selected features (default: '5')
-  --skip_header         Skip header row
+                        Conduct normalization (Permissive values: 'standard',
+                        'minmax', 'skip') (default: 'standard')
+  -k K                  Number of selected features (default: 5)
+  --skip_header         Skip header row (default: False)
   --n_estimators N_ESTIMATORS
                         This option is active only when '-m RandomForest'.
                         Number of trees for random forest feature selection.
+                        (default: 100)
   --max_depth MAX_DEPTH
                         This option is active only when '-m RandomForest'.
                         Maximum tree depth for random forest feature
-                        selection.
+                        selection. (default: 2)
   --signed              Calculate signed importance value (positive or
-                        negative)
+                        negative) (default: False)
 ```
 
 **evodictor predict / predevo**
 
 ```
-usage: evodictor predict [-h] [-v] [-p] [-i INPUT] [-t TEST] [-n NORMALIZE] [-m MODEL]
+usage: evodictor predict [-h] [-v] [-p] [-i INPUT] [-m MODEL] [-t TEST] [-n NORMALIZE]
                [--pointbiserialr] [-c] [--hv] [-k KFOLD] [-s SAMPLING]
                [--scoring SCORING] [--permutation PERMUTATION] [-r SEED]
                [--header] [--n_estimators N_ESTIMATORS]
@@ -188,52 +191,61 @@ evodictor predict
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print SyntrophyDetector version
+  -v, --version         Print evodictor version
   -p, --print           Print all arguments
   -i INPUT, --input INPUT
                         [Required] Input file path
+  -m MODEL, --model MODEL
+                        [Required] Prediction model (Permissive values: 'LR',
+                        'RF')
   -t TEST, --test TEST  Test data file path; if this option was specified, the
                         file specified by -i is treated as a training dataset,
                         then conduct prediction for the test data file
                         specified by this option
   -n NORMALIZE, --normalize NORMALIZE
-                        Conduct normalization (Permissive values: 'standard'
-                        (default), 'minmax', 'skip')
-  -m MODEL, --model MODEL
-                        [Required] Prediction model (Permissive values: 'LR',
-                        'RF')
+                        Conduct normalization (Permissive values: 'standard',
+                        'minmax', 'skip') (default: 'standard')
   --pointbiserialr      Calculates a point biserial correlation coefficient
                         between each feature and y, and the associated p-value
-                        (if True, other options will be ignored)
+                        (if True, other options will be ignored) (default:
+                        False)
   -c, --cv              Conduct stratified cross validation
-  --hv                  Conduct stratified hold-out validation
+  --hv                  Conduct stratified hold-out validation (default:
+                        False)
   -k KFOLD, --kfold KFOLD
-                        K for k-fold stratified cross validation
+                        K for k-fold stratified cross validation. This option
+                        is valid only when -c is specified. (default: 0)
   -s SAMPLING, --sampling SAMPLING
                         Resampling the training dataset in cross validation.
-                        Permissive values: 'none' (default), 'under', 'over'
+                        Permissive values: 'none', 'under', 'over' (default:
+                        'none')
   --scoring SCORING     Scoring of cross validation. Permissive values:
-                        'roc_auc', 'roc_auc_pvalue', or 'roc_curve' (only with
-                        --cv)
+                        'roc_auc', 'roc_auc_pvalue', or 'roc_curve'. This
+                        option is valid only when -c is specified. (default:
+                        'roc_auc')
   --permutation PERMUTATION
                         Number of permutations for calculating p-value of AUC
                         in cross validation. This option is used only when '--
-                        scoring roc_auc_pvalue' is specified.
-  -r SEED, --seed SEED  Random seed
-  --header              Skip header row
+                        scoring roc_auc_pvalue' is specified. (default:
+                        100000)
+  -r SEED, --seed SEED  Random seed (default: 0)
+  --header              Skip header row (default: False)
   --n_estimators N_ESTIMATORS
-                        This option is active only when '-m RandomForest'.
                         Number of trees for random forest feature selection.
+                        This option is active only when '-m RF'. (default:
+                        100)
   --max_depth MAX_DEPTH
-                        This option is active only when '-m RandomForest'.
                         Maximum tree depth for random forest feature
-                        selection.
+                        selection. This option is active only when '-m RF'.
+                        (default: 2)
   --lr_penalty LR_PENALTY
-                        Regularization for logistic regression. Permissive
-                        values: ‘l1’, ‘l2’, ‘elasticnet’, ‘none’
+                        Regularization for logistic regression. This option is
+                        active only when '-m LR'. Permissive values: ‘l1’,
+                        ‘l2’, ‘elasticnet’, ‘none’ (default: 'l2')
   --lr_solver LR_SOLVER
                         Solver for logistic regression. Permissive values:
                         ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’
+                        (default: 'liblinear')
 ```
 
 ### Contact

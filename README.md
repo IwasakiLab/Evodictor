@@ -3,7 +3,7 @@
 
 ### Overview of Evodictor
 
-**Evodictor** is a software package for predicting evolution of given traits from a species-trait table and a phylogenetic tree
+**Evodictor** is a software package for predicting gain/loss evolution of given traits from a species-trait table and a phylogenetic tree
 
 ### Supported Environment
 
@@ -14,6 +14,13 @@
 <h4>Required</h4>
 
 1. Python3 (version: 3.7.0 or later) with biopython, scipy, numpy, imblearn, and scikit-learn modules *required*
+
+  - You can install these python modules using conda
+
+    ```shell
+    conda install -c conda-forge biopython imbalanced-learn
+    conda install -c anaconda scipy numpy scikit-learn
+    ```
 
 ### Software installation
 
@@ -87,17 +94,13 @@ Output:
 
 **Example 3**
 
-Conduct five-fold cross validation of gene gain prediction for an ortholog group ("K00005")
+Conduct three-fold cross validation of gene gain prediction by logistic regression for an ortholog group ("K00005")
 
 ```shell
+evodictor predict -i branch_X_y.selected.20.txt -c -k 3 -m LR --header > cross_validated_AUCs.txt
 ```
 
-**Example 4**
-
-Predict gene gain probability of every extant species for an ortholog group ("K00005")
-
-```shell
-```
+[`cross_validated_AUCs.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/cross_validated_AUCs.txt) : List of three AUCs measured by three-fold cross validation
 
 ### Usage
 

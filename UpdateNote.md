@@ -1,5 +1,8 @@
 ### Update Log
 
+<h4> 4/25/2022 Version 1.0.1 </h4>
+1. Remove networkx requirements
+
 <h4> 4/25/2022 Version 1.0.0 </h4>
 1. Bug fix
 2. Prepared readme

@@ -19,7 +19,8 @@
 
     ```shell
     conda install -c conda-forge biopython imbalanced-learn
-    conda install -c anaconda scipy numpy scikit-learn
+    conda install -c anaconda scipy scikit-learn
+    conda install -c conda-forge conda-forge::numpy
     ```
 
 ### Software installation

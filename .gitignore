@@ -1,2 +1,2 @@
-/src/modules/__pycache__
-/test
+src/modules/__pycache__/
+test/

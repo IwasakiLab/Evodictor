@@ -1,5 +1,9 @@
 ### Update Log
 
+<h4> 10/08/2022 Version 2.0.0 </h4>
+1. Many updates (for cross-domain prediction and upstream/downstream branch split)
+2. Set the latest version as 2.0.0
+
 <h4> 4/25/2022 Version 1.0.2 </h4>
 1. Edit help messages
 

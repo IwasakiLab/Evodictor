@@ -1,29 +1,37 @@
-<h2>Evolution Prediction Toolkit and User Manual</h2>
+<h2>Evodictor and User Manual</h2>
 
 
-### Overview of Evolution Prediction Toolkit
+### Overview of Evodictor
 
-**Evolutin Prediction Toolkit** is a software package for predicting evolution of given traits from a species-trait table and a phylogenetic tree
+**Evodictor** is a software package for predicting gain/loss evolution of given traits from a species-trait table and a phylogenetic tree
 
 ### Supported Environment
 
-1. **Evolutin Prediction Toolkit** can be executed on Linux OS / Mac
+1. **Evodictor** can be executed on Linux OS / Mac
 
 ### Software Dependency
 
 <h4>Required</h4>
 
-1. Python3 (version: 3.7.0 or later) with scipy, numpy, scikit-learn, and imbalanced-learn modules *required*
+1. Python3 (version: 3.7.0 or later) with biopython, scipy, numpy, imblearn, and scikit-learn modules *required*
+
+  - You can install these python modules using conda
+
+    ```shell
+    conda install -c conda-forge biopython imbalanced-learn
+    conda install -c anaconda scipy scikit-learn
+    conda install -c conda-forge conda-forge::numpy
+    ```
 
 ### Software installation
 
 Each installation step will take less than ~1 min
 
 
-#### Installation of Evolutin Prediction Toolkit # Currently Unavailable
+#### Installation of Evodictor
 
 
-1. Download Evolution Prediction Toolkit by
+1. Download Evodictor by
 
    ```shell
     git clone 
@@ -31,144 +39,213 @@ Each installation step will take less than ~1 min
 
 2. Add the absolute path of `xxx/src` directory to `$PATH`
 
+3. Make `/src/*` executable
+
+   ```shell
+   chmod u+x xxx/src/*
+   ```
+
 ### Sample Codes
 
-The Evolution Prediction Toolkit package contains an example input file in the `examples` directory so that users can easily try the basic function as follows:
+The evodictor contains an example input file in the `examples` directory so that users can easily try the basic function as follows:
 
 **Example 1**
 
-Calculate importane of each feature based on ANOVA
+Generate dataset for machine learning from a ancestral state reconstruction result and a phylogenetic tree to predict gene gain of an ortholog group ("K00005")
 
 ```shell
-selevo -i Xy.txt --skip_header --o1 $(pwd)/result.o1.txt --o2 $(pwd)/result.o2.txt --o3 $(pwd)/result.o3.txt -k 5
+evodictor generate --target K00005 -X OG_node_state.txt -y OG_node_state.txt -t example.tree --predictor feature_OG.txt --gl gain > branch_X_y.txt
 ```
 
+Or you can type "xygen" instead of "evodictor generate".
 
 Input:
 
-[`Xy.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/Xy.txt)
+[`OG_node_state.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/OG_node_state.txt): The state of possession of an ortholog group (OG) for tips and internal nodes of `example.tree`. States not written in this file will be treated as 0.
+
+[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a newick format.
+
+[`feature_OG.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/feature_OG.txt): Correspondence of each feature (M00001, M00002, ...) and ortholog groups (K00001, K00002, ...). One feature corresponds to multiple ortholog groups.
 
 Output:
 
-[`result.o1.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o1.txt) : Importance of each feature
+[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt): List of input (X) and output (y) for every branch in `example.tree`. Branches are represented by the names of their child node. X is the feature vector representing the gene content of parental species of a branch, and y is the occurrence of gene gain/loss of an ortholog group (K00005). 
 
-[`result.o2.5.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o2.5.txt) : Binary values indicating whether each feature was selected or not (1: selected, 0: not selected)
+**Example 2**
 
-[`result.o3.5.txt`](https://github.com/IwasakiLab/PredictMetabolicNetworkEvolution/blob/master/python/Pipeline/EvolutionPredictor/example/output/result.o3.5.txt) : Input dataset for predevo which includes only selected features  
+Select top-20 input features based on ANOVA F-value to predict gene gain of an ortholog group ("K00005")
+
+```shell
+evodictor select -i branch_X_y.txt --skip_header --o1 feature_importance.txt --o2 selection_result.txt --o3 branch_X_y.selected.txt -k 20
+```
+
+Or you can type "selevo" instead of "evodictor select".
+
+Input:
+
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/branch_X_y.selected.20.txt)
+
+Output:
+
+[`feature_importance.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/feature_importance.txt) : Importance of every feature
+
+[`selection_result.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/selection_result.20.txt) : Binary values indicating whether each feature was selected or not (1: selected, 0: not selected)
+
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.txt) : Input dataset for "evodictor predict" which includes only selected features  
+
+**Example 3**
+
+Conduct three-fold cross validation of gene gain prediction by logistic regression for an ortholog group ("K00005")
+
+```shell
+evodictor predict -i branch_X_y.selected.20.txt -c -k 3 -m LR --header > cross_validated_AUCs.txt
+```
+
+[`cross_validated_AUCs.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/cross_validated_AUCs.txt) : List of three AUCs measured by three-fold cross validation
 
 ### Usage
 
-**xygen**
+**evodictor generate / xygen**
 
 ```
-usage: xygen [-h] [-v] [-p] [--target TARGET] [-X SPARSE_X] [-y SPARSE_Y]
-             [-t TREE] [-m MODE] [--predictor PREDICTOR] [--gl GL] [--ex]
+usage: evodictor generate [-h] [-v] [-p] [--target TARGET] [-X SPARSE_X] [-y SPARSE_Y]
+             [-t TREE] [--predictor PREDICTOR] [--gl GL] [-m MODE] [--ex]
 
-xygen
+evodictor generate
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print EvolutionPredictor version
-  -p, --print           Print all arguments
-  --target TARGET       Prediction target (eg. 'R00001')
+  -v, --version         Print evodictor version (default: False)
+  -p, --print           Print all arguments (default: False)
+  --target TARGET       [Required] Prediction target (eg. 'R00001')
   -X SPARSE_X, --sparse_X SPARSE_X
                         [Required] Sparse matrix file path for input features
                         X
   -y SPARSE_Y, --sparse_y SPARSE_Y
                         [Required] Sparse matrix file path for output y
-  -t TREE, --tree TREE  Tree file path
-  -m MODE, --mode MODE  Mode of dataset generator (default: 'define')
+  -t TREE, --tree TREE  [Required] Tree file path
   --predictor PREDICTOR
-                        Predictor definition file path
-  --gl GL               Specify 'gain' or 'loss'
-  --ex                  Print only X for extant species
+                        [Required] Predictor definition file path
+  --gl GL               [Required] Specify 'gain' or 'loss'
+  -m MODE, --mode MODE  Mode of dataset generator (default: 'define')
+  --ex                  Print only X for extant species (default: False)
 ```
 
-**selevo**
+**evodictor select / selevo**
 
 ```
-usage: selevo [-h] [-v] [-p] [-i INPUT] [--scores SCORES] [--mask MASK]
-              [--newXygen NEWXYGEN] [-n NORMALIZE] [-m METHOD] [-k K]
+usage: evodictor select [-h] [-v] [-p] [-i INPUT] [-m METHOD] [--scores SCORES]
+              [--mask MASK] [--newXygen NEWXYGEN] [-n NORMALIZE] [-k K]
               [--skip_header] [--n_estimators N_ESTIMATORS]
-              [--max_depth MAX_DEPTH] [--signed] [--direct DIRECT]
+              [--max_depth MAX_DEPTH] [--signed]
 
-selevo
+evodictor select
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print SyntrophyDetector version
+  -v, --version         Print evodictor version
   -p, --print           Print all arguments
   -i INPUT, --input INPUT
-                        Input file path
+                        [required] Input file path
+  -m METHOD, --method METHOD
+                        [required] Feature selection method (Permissive
+                        values: 'ANOVA', 'RandomForest')
   --scores SCORES, --o1 SCORES
-                        Output model parameter file path ('stdout' is also
-                        acceptable, 'None' inactivates output)
+                        Output feature importance file path ('stdout' is also
+                        acceptable, 'None' inactivates output) (default:
+                        stdout)
   --mask MASK, --o2 MASK
                         Output selected parameters ('0': not selected, '1':
-                        selected)
+                        selected) (default: stdout)
   --newXygen NEWXYGEN, --o3 NEWXYGEN
-                        Output renewed dataset file path
+                        Output a dataset file with selected features (default:
+                        stdout)
   -n NORMALIZE, --normalize NORMALIZE
-                        Conduct normalization (Permissive values: 'standard'
-                        (default), 'minmax', 'skip')
-  -m METHOD, --method METHOD
-                        Feature selection method (Permissive values: 'ANOVA',
-                        'RF', 'MI')
-  -k K                  Number of selected features (default: '5')
-  --skip_header         Skip header row
+                        Conduct normalization (Permissive values: 'standard',
+                        'minmax', 'skip') (default: 'standard')
+  -k K                  Number of selected features (default: 5)
+  --skip_header         Skip header row (default: False)
   --n_estimators N_ESTIMATORS
                         This option is active only when '-m RandomForest'.
                         Number of trees for random forest feature selection.
+                        (default: 100)
   --max_depth MAX_DEPTH
                         This option is active only when '-m RandomForest'.
                         Maximum tree depth for random forest feature
-                        selection.
+                        selection. (default: 2)
   --signed              Calculate signed importance value (positive or
-                        negative)
-  --direct DIRECT       Not calculate feature importance, but extract
-                        specified features. (eg. --direct '<feature
-                        1>;<feature 2>;<feature 5>'
+                        negative) (default: False)
 ```
 
-**predevo**
+**evodictor predict / predevo**
 
 ```
-usage: predevo [-h] [-v] [-p] [-i INPUT] [-t TEST] [-n NORMALIZE] [-m MODEL] [--pointbiserialr] [-c] [--hv] [-k KFOLD] [-s SAMPLING] [--scoring SCORING] [--permutation PERMUTATION] [-r SEED] [--header]
-               [--n_estimators N_ESTIMATORS] [--max_depth MAX_DEPTH] [--lr_penalty LR_PENALTY] [--lr_solver LR_SOLVER]
+usage: evodictor predict [-h] [-v] [-p] [-i INPUT] [-m MODEL] [-t TEST] [-n NORMALIZE]
+               [--pointbiserialr] [-c] [--hv] [-k KFOLD] [-s SAMPLING]
+               [--scoring SCORING] [--permutation PERMUTATION] [-r SEED]
+               [--header] [--n_estimators N_ESTIMATORS]
+               [--max_depth MAX_DEPTH] [--lr_penalty LR_PENALTY]
+               [--lr_solver LR_SOLVER]
 
-predevo
+evodictor predict
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --version         Print SyntrophyDetector version
+  -v, --version         Print evodictor version
   -p, --print           Print all arguments
   -i INPUT, --input INPUT
                         [Required] Input file path
-  -t TEST, --test TEST  Test data file path; if this option was specified, the file specified by -i is treated as a training dataset, then conduct prediction for the test data file specified by this option
-  -n NORMALIZE, --normalize NORMALIZE
-                        Conduct normalization (Permissive values: 'standard' (default), 'minmax', 'skip')
   -m MODEL, --model MODEL
-                        [Required] Prediction model (Permissive values: 'LR', 'RF')
-  --pointbiserialr      Calculates a point biserial correlation coefficient between each feature and y, and the associated p-value (if True, other options will be ignored)
+                        [Required] Prediction model (Permissive values: 'LR',
+                        'RF')
+  -t TEST, --test TEST  Test data file path; if this option was specified, the
+                        file specified by -i is treated as a training dataset,
+                        then conduct prediction for the test data file
+                        specified by this option
+  -n NORMALIZE, --normalize NORMALIZE
+                        Conduct normalization (Permissive values: 'standard',
+                        'minmax', 'skip') (default: 'standard')
+  --pointbiserialr      Calculates a point biserial correlation coefficient
+                        between each feature and y, and the associated p-value
+                        (if True, other options will be ignored) (default:
+                        False)
   -c, --cv              Conduct stratified cross validation
-  --hv                  Conduct stratified hold-out validation
+  --hv                  Conduct stratified hold-out validation (default:
+                        False)
   -k KFOLD, --kfold KFOLD
-                        K for k-fold stratified cross validation
+                        K for k-fold stratified cross validation. This option
+                        is valid only when -c is specified. (default: 0)
   -s SAMPLING, --sampling SAMPLING
-                        Resampling the training dataset in cross validation. Permissive values: 'none' (default), 'under', 'over'
-  --scoring SCORING     Scoring of cross validation. Permissive values: 'roc_auc', 'roc_auc_pvalue', or 'roc_curve' (only with --cv)
+                        Resampling the training dataset in cross validation.
+                        Permissive values: 'none', 'under', 'over' (default:
+                        'none')
+  --scoring SCORING     Scoring of cross validation. Permissive values:
+                        'roc_auc', 'roc_auc_pvalue', or 'roc_curve'. This
+                        option is valid only when -c is specified. (default:
+                        'roc_auc')
   --permutation PERMUTATION
-                        Number of permutations for calculating p-value of AUC in cross validation. This option is used only when '--scoring roc_auc_pvalue' is specified.
-  -r SEED, --seed SEED  Random seed
-  --header              Skip header row
+                        Number of permutations for calculating p-value of AUC
+                        in cross validation. This option is used only when '--
+                        scoring roc_auc_pvalue' is specified. (default:
+                        100000)
+  -r SEED, --seed SEED  Random seed (default: 0)
+  --header              Skip header row (default: False)
   --n_estimators N_ESTIMATORS
-                        This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.
+                        Number of trees for random forest feature selection.
+                        This option is active only when '-m RF'. (default:
+                        100)
   --max_depth MAX_DEPTH
-                        This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.
+                        Maximum tree depth for random forest feature
+                        selection. This option is active only when '-m RF'.
+                        (default: 2)
   --lr_penalty LR_PENALTY
-                        Regularization for logistic regression. Permissive values: ‘l1’, ‘l2’, ‘elasticnet’, ‘none’
+                        Regularization for logistic regression. This option is
+                        active only when '-m LR'. Permissive values: ‘l1’,
+                        ‘l2’, ‘elasticnet’, ‘none’ (default: 'l2')
   --lr_solver LR_SOLVER
-                        Solver for logistic regression. Permissive values: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’
+                        Solver for logistic regression. Permissive values:
+                        ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’
+                        (default: 'liblinear')
 ```
 
 ### Contact

@@ -9,8 +9,7 @@ def create_dataset(
     predictor2elemlist, 
     predictor_list,
     mode, 
-    gain_or_loss,
-    args
+    gain_or_loss
     ):
 
     zero = 0.00000001
@@ -29,6 +28,7 @@ def create_dataset(
 
         if node.name not in sp2xelem2xweight.keys(): 
             print("Warning:", node.name, "does not have any elements!", sep = " ", file = sys.stderr)
+            #print("Warning: Number of keys", len(sp2xelem2xweight.keys()), sep = " ", file = sys.stderr)
             #sys.exit(1)
 
         yweight_before  = (sp2yelem2yweight[node.name][targetelem] if targetelem in sp2yelem2yweight[node.name].keys() else 0) if node.name in sp2yelem2yweight.keys() else 0
@@ -36,6 +36,7 @@ def create_dataset(
 
             if node.name not in sp2xelem2xweight.keys(): 
                 print("Warning:", child.name, "does not have any elements!", sep = " ", file = sys.stderr)
+                #print("Warning: Number of keys", len(sp2xelem2xweight.keys()), sep = " ", file = sys.stderr)
                 #sys.exit(1)
 
             yweight_after  = (sp2yelem2yweight[child.name][targetelem] if targetelem in sp2yelem2yweight[child.name].keys() else 0) if child.name in sp2yelem2yweight.keys() else 0
@@ -62,8 +63,7 @@ def create_dataset(
                 else:
                     y = 0
                 
-                if   args.branch_name_format == 'parent': SpXylist.append((node.name, X, y))
-                elif args.branch_name_format == 'child': SpXylist.append((child.name, X, y))
+                SpXylist.append((node.name, X, y))
 
     return SpXylist
 

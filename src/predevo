@@ -40,7 +40,7 @@ def predevo(
     i = 0
 
     if ( not header ):
-        print ("Please attach --header if there is a header row in the input file...", file = sys.stderr)
+        print ("Please attach --header if there is a header row in the input file...")
 
     for line in handle:
 
@@ -270,6 +270,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='predevo', add_help=True)
     
     parser.add_argument(
+        "-v", "--version",
+        help="Print evodictor version",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
         "-p", "--print",
         help="Print all arguments",
         action='store_true',
@@ -279,6 +285,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-i", "--input",
         help="[Required] Input file path", 
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-m", "--model",
+        help="[Required] Prediction model (Permissive values: 'LR', 'RF')", 
         default=None,
         type=str,
         )
@@ -294,22 +307,15 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-n", "--normalize",
-        help="Conduct normalization (Permissive values: 'standard' (default), 'minmax', 'skip')", 
+        help="Conduct normalization (Permissive values: 'standard', 'minmax', 'skip') (default: 'standard')", 
         default="standard",
-        type=str,
-        )
-
-    parser.add_argument(
-        "-m", "--model",
-        help="[Required] Prediction model (Permissive values: 'LR', 'RF')", 
-        default=None,
         type=str,
         )
     
     parser.add_argument(
         "--pointbiserialr",
         help="Calculates a point biserial correlation coefficient between \
-                each feature and y, and the associated p-value (if True, other options will be ignored)", 
+                each feature and y, and the associated p-value (if True, other options will be ignored) (default: False)", 
         action='store_true',
         default=False
         )
@@ -324,42 +330,42 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--hv",
-        help="Conduct stratified hold-out validation", 
+        help="Conduct stratified hold-out validation (default: False)", 
         action='store_true',
         default=False
         )
     
     parser.add_argument(
         "-k", "--kfold",
-        help="K for k-fold stratified cross validation",
+        help="K for k-fold stratified cross validation. This option is valid only when -c is specified. (default: 0)",
         default=0,
         type=int
         )
 
     parser.add_argument(
         "-s", "--sampling",
-        help="Resampling the training dataset in cross validation. Permissive values: 'none' (default), 'under', 'over'",
+        help="Resampling the training dataset in cross validation. Permissive values: 'none', 'under', 'over' (default: 'none')",
         default='none',
         type=str
         )
     
     parser.add_argument(
         "--scoring",
-        help="Scoring of cross validation. Permissive values: 'roc_auc', 'roc_auc_pvalue', or 'roc_curve' (only with --cv)",
+        help="Scoring of cross validation. Permissive values: 'roc_auc', 'roc_auc_pvalue', or 'roc_curve'. This option is valid only when -c is specified. (default: 'roc_auc')",
         default='roc_auc',
         type=str
         )
         
     parser.add_argument(
         "--permutation",
-        help="Number of permutations for calculating p-value of AUC in cross validation. This option is used only when '--scoring roc_auc_pvalue' is specified.",
+        help="Number of permutations for calculating p-value of AUC in cross validation. This option is used only when '--scoring roc_auc_pvalue' is specified. (default: 100000)",
         default=100000,
         type=int
         )
 
     parser.add_argument(
         "-r", "--seed",
-        help="Random seed",
+        help="Random seed (default: 0)",
         default=0,
         type=int
         )
@@ -367,7 +373,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "--header",
-        help="Skip header row", 
+        help="Skip header row (default: False)", 
         action='store_true',
         default=False
     )
@@ -376,28 +382,28 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--n_estimators",
-        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.", 
+        help="Number of trees for random forest feature selection. This option is active only when '-m RF'. (default: 100)", 
         type=int,
         default=100
     )
 
     parser.add_argument(
         "--max_depth",
-        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.", 
+        help="Maximum tree depth for random forest feature selection. This option is active only when '-m RF'. (default: 2)", 
         type=int,
         default=2
     )
 
     parser.add_argument(
         "--lr_penalty",
-        help="Regularization for logistic regression. Permissive values: ‘l1’, ‘l2’, ‘elasticnet’, ‘none’", 
+        help="Regularization for logistic regression. This option is active only when '-m LR'. Permissive values: ‘l1’, ‘l2’, ‘elasticnet’, ‘none’ (default: 'l2')", 
         type=str,
         default='l2'
     )
 
     parser.add_argument(
         "--lr_solver",
-        help="Solver for logistic regression. Permissive values: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’", 
+        help="Solver for logistic regression. Permissive values: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’ (default: 'liblinear')", 
         type=str,
         default='liblinear'
     )
@@ -406,6 +412,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
 
     if args.print:
         argument_saver(args)

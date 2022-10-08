@@ -6,7 +6,7 @@
 import argparse
 import csv
 import re
-import networkx as nx
+#import networkx as nx
 from Bio        import Phylo
 from modules    import mylink, CreateDataset, PrintVersion
 ######################
@@ -21,8 +21,7 @@ def xygen(
         predictor_file,
         mode,
         gain_or_loss,
-        show_extant,
-        args
+        show_extant
     ):
     
     # read 
@@ -49,6 +48,7 @@ def xygen(
                 #    sp2xelem2xweight[sp][elem] = {}
                 
                 sp2xelem2xweight[sp][elem] = xweight # xweight == 0, 0.5, or 1
+
     
     sp2yelem2yweight = {}
 
@@ -127,8 +127,7 @@ def xygen(
             predictor2elemlist = predictor2elemlist, 
             predictor_list     = predictor_list,
             mode               = mode, 
-            gain_or_loss       = gain_or_loss,
-            args               = args
+            gain_or_loss       = gain_or_loss
             )
         
         # Output
@@ -178,15 +177,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='xygen', add_help=True)
     
     parser.add_argument(
+        "-v", "--version",
+        help="Print evodictor version (default: False)",
+        action='store_true',
+        default=False
+        )
+    parser.add_argument(
         "-p", "--print",
-        help="Print all arguments",
+        help="Print all arguments (default: False)",
         action='store_true',
         default=False
         )
     
     parser.add_argument(
         "--target",
-        help="Prediction target (eg. 'R00001')",
+        help="[Required] Prediction target (eg. 'R00001')",
         default=None,
         type=str,
         )
@@ -207,7 +212,21 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-t", "--tree",
-        help="Tree file path",
+        help="[Required] Tree file path",
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "--predictor",
+        help="[Required] Predictor definition file path", # List of <Predictor No.>\t<KO name>
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "--gl",
+        help="[Required] Specify 'gain' or 'loss'", # List of <Predictor No.>\t<KO name>
         default=None,
         type=str,
         )
@@ -220,30 +239,10 @@ if __name__ == "__main__":
         )
     
     parser.add_argument(
-        "--predictor",
-        help="Predictor definition file path", # List of <Predictor No.>\t<KO name>
-        default=None,
-        type=str,
-        )
-    
-    parser.add_argument(
-        "--gl",
-        help="Specify 'gain' or 'loss'", # List of <Predictor No.>\t<KO name>
-        default=None,
-        type=str,
-        )
-    
-    parser.add_argument(
         "--ex",
-        help="Print only X for extant species", # List of <Predictor No.>\t<KO name>
+        help="Print only X for extant species (default: False)", # List of <Predictor No.>\t<KO name>
         action='store_true',
         default=False,
-        )
-
-    parser.add_argument(
-        "--branch_name_format",
-        help="Set the format of branch name. Permissive values: 'parent' or 'child'", # List of <Predictor No.>\t<KO name>
-        default='parent',
         )
     
     
@@ -251,6 +250,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # to show version
+
+    if args.version:
+        PrintVersion.print_version()
+        exit()
 
     if args.print:
         argument_saver(args)
@@ -263,6 +266,5 @@ if __name__ == "__main__":
         targetelem              = args.target,
         mode                    = args.mode,
         gain_or_loss            = args.gl,
-        show_extant             = args.ex,
-        args                    = args
+        show_extant             = args.ex
         )

@@ -13,8 +13,12 @@ def FeatureSelection(
     signed,
     # random forest args
     n_estimators = 100,
-    max_depth = 2
+    max_depth = 2,
+    class_weight = "balanced"
     ):
+
+    if class_weight == "None": class_weight = None
+
     if (method == "ANOVA"):
         from sklearn.feature_selection import SelectKBest
         from sklearn.feature_selection import f_classif
@@ -46,8 +50,14 @@ def FeatureSelection(
         from sklearn.feature_selection import SelectFromModel
         from sklearn.ensemble import RandomForestClassifier
 
+        print ("RandomForestClassifier papameters:", file=sys.stderr)
+        print ("n_estimators:", n_estimators, file=sys.stderr)
+        print ("max_depth:", max_depth, file=sys.stderr)
+        print ("random_state:", 0, file=sys.stderr)
+        print ("class_weight:", class_weight, file=sys.stderr)
+
         selector = SelectFromModel(
-            RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=0),  # n_estimators = 100 is the default
+            RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=0, class_weight = class_weight),  # n_estimators = 100 is the default
             threshold=-np.inf, 
             max_features=k
             )  

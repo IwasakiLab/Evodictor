@@ -161,6 +161,7 @@ def predevo(
                 # others
                 scoring = args.scoring,
                 n_permutation = args.permutation,
+                class_weight = args.class_weight
                 )
             
             if (args.scoring == "roc_curve"):
@@ -188,7 +189,8 @@ def predevo(
             n_estimators = args.n_estimators, 
             max_depth = args.max_depth,
             lr_penalty = args.lr_penalty,
-            lr_solver  = args.lr_solver
+            lr_solver  = args.lr_solver,
+            class_weight = args.class_weight
             )
 
         # print fitted parameters
@@ -400,6 +402,13 @@ if __name__ == "__main__":
         help="Solver for logistic regression. Permissive values: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’", 
         type=str,
         default='liblinear'
+    )
+
+    parser.add_argument(
+        "--class_weight",
+        help="class_weight parameter in scikit-learn. Permissive values: ‘balenced’, ‘None’", 
+        type=str,
+        default="balanced"
     )
     
     # parse arguments

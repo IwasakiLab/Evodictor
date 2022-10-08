@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, roc_curve
 import random
 import numpy as np
+import sys
 
 def fitting(
     X_array, 
@@ -21,7 +22,10 @@ def fitting(
     # random forest args
     n_estimators = 100,
     max_depth = 2,
+    class_weight = "balanced"
     ):
+
+    if class_weight == "None": class_weight = None
 
     if (model == "LR"):
         
@@ -34,8 +38,14 @@ def fitting(
         return coef, intercept, discr
     
     elif (model == "RF"):
+
+        print ("RandomForestClassifier papameters:", file=sys.stderr)
+        print ("n_estimators:", n_estimators, file=sys.stderr)
+        print ("max_depth:", max_depth, file=sys.stderr)
+        print ("random_state:", 0, file=sys.stderr)
+        print ("class_weight:", class_weight, file=sys.stderr)
         
-        discr = RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=random_seed)
+        discr = RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=random_seed, class_weight = class_weight)
         discr.fit(X_array, y_array)
 
         feature_importance = discr.feature_importances_
@@ -72,8 +82,11 @@ def crossvalidation(
     max_depth = 2,
     # others
     scoring = "roc_auc",
-    n_permutation = 100000
+    n_permutation = 100000,
+    class_weight = "balanced"
     ):
+
+    if class_weight == "None": class_weight = None
 
     if (model == "LR"):
         
@@ -81,8 +94,14 @@ def crossvalidation(
         
     
     elif (model == "RF"):
+
+        print ("RandomForestClassifier papameters:", file=sys.stderr)
+        print ("n_estimators:", n_estimators, file=sys.stderr)
+        print ("max_depth:", max_depth, file=sys.stderr)
+        print ("random_state:", 0, file=sys.stderr)
+        print ("class_weight:", class_weight, file=sys.stderr)
         
-        discr = RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=random_seed)
+        discr = RandomForestClassifier(n_estimators = n_estimators, max_depth = max_depth, random_state=random_seed, class_weight = class_weight)
         
     stratifiedkfold = StratifiedKFold(n_splits=k, shuffle = True, random_state=random_seed) # This is quite important because the order of X and y is not arbitrary
 

@@ -94,7 +94,7 @@ def selevo(
             normX_array = copy.deepcopy(X_array_filtered)
 
         # feature selection
-        scores_filtered = FeatureSelection.FeatureSelection(normX_array, y_array, method, k_list[0], signed=signed, n_estimators = args.n_estimators, max_depth = args.max_depth)
+        scores_filtered = FeatureSelection.FeatureSelection(normX_array, y_array, method, k_list[0], signed=signed, n_estimators = args.n_estimators, max_depth = args.max_depth, class_weight=args.class_weight)
         
         # Re-include features filtered out
         scores = np.zeros(L)
@@ -307,6 +307,13 @@ if __name__ == "__main__":
         help="Not calculate feature importance, but extract specified features. (eg. --direct '<feature 1>;<feature 2>;<feature 5>'", 
         type=str,
         default=""
+    )
+
+    parser.add_argument(
+        "--class_weight",
+        help="class_weight parameter in scikit-learn. Permissive values: ‘balenced’, ‘None’", 
+        type=str,
+        default="balanced"
     )
     
     # parse arguments

@@ -175,7 +175,7 @@ def argument_saver(args):
 #   interface
 if __name__ == "__main__":
     # interface
-    parser = argparse.ArgumentParser(description='xygen', add_help=False)
+    parser = argparse.ArgumentParser(description='xygen', add_help=True)
     
     parser.add_argument(
         "-p", "--print",

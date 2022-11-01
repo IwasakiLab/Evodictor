@@ -25,7 +25,7 @@ def fitting(
     class_weight = "balanced"
     ):
 
-    if class_weight == "None": class_weight = None
+    if class_weight == "none": class_weight = None
 
     if (model == "LR"):
         
@@ -86,7 +86,7 @@ def crossvalidation(
     class_weight = "balanced"
     ):
 
-    if class_weight == "None": class_weight = None
+    if class_weight == "none": class_weight = None
 
     if (model == "LR"):
         

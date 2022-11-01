@@ -311,7 +311,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--class_weight",
-        help="class_weight parameter in scikit-learn. Permissive values: ‘balenced’, ‘None’", 
+        help="class_weight parameter in scikit-learn. Permissive values: ‘balanced’, ‘none’", 
         type=str,
         default="balanced"
     )

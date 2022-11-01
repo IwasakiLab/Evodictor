@@ -17,7 +17,7 @@ def FeatureSelection(
     class_weight = "balanced"
     ):
 
-    if class_weight == "None": class_weight = None
+    if class_weight == "none": class_weight = None
 
     if (method == "ANOVA"):
         from sklearn.feature_selection import SelectKBest

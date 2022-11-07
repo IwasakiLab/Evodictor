@@ -1,5 +1,9 @@
 ### Update Log
 
+<h4> 10/08/2022 Version 2.1.0 </h4>
+1. Fix the random seed of mutual_info_classif as 0
+2. Set the latest version as 2.1.0
+
 <h4> 10/08/2022 Version 2.0.0 </h4>
 1. Many updates (for cross-domain prediction and upstream/downstream branch split)
 2. Set the latest version as 2.0.0

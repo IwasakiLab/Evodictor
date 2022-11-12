@@ -70,7 +70,7 @@ def FeatureSelection(
         from sklearn.feature_selection import SelectKBest
         from sklearn.feature_selection import mutual_info_classif
         
-        selector = SelectKBest(score_func=mutual_info_classif, k=k, random_state=0, ) 
+        selector = SelectKBest(score_func=mutual_info_classif, k=k, ) 
         selector.fit(X_array, y_array)
         scores   = selector.scores_
 

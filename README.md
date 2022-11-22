@@ -34,7 +34,7 @@ Each installation step will take less than ~1 min
 1. Download Evodictor by
 
    ```shell
-    git clone 
+    git clone https://github.com/IwasakiLab/Evodictor.git
    ```
 
 2. Add the absolute path of `xxx/src` directory to `$PATH`

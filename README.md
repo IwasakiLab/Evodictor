@@ -83,7 +83,7 @@ Or you can type "selevo" instead of "evodictor select".
 
 Input:
 
-[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/branch_X_y.selected.20.txt)
+[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt)
 
 Output:
 

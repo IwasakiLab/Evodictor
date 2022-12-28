@@ -1,0 +1,134 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import pandas as pd
+import collections
+from Bio import Phylo
+import argparse
+import sys
+
+
+def main(args):
+
+    # Parameters
+    positive_ratio   = args.pos_ratio
+    taxonomy         = args.resolution
+    tree_file        = args.tree
+    xygen_file       = args.dataset
+    taxonomy_file    = args.taxonomy
+
+    # read tree
+    tree_bacteria = Phylo.read(tree_file, "newick")
+
+    # construct node2phylum
+    df_sp_tax_bacteria = pd.read_table(taxonomy_file, names = ["genome", "taxonomy"])
+    df_sp_tax_bacteria["phylum"]           = [taxonomy.split(";")[1] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["class"]            = [taxonomy.split(";")[2] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["order"]            = [taxonomy.split(";")[3] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["family"]           = [taxonomy.split(";")[4] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["genus"]            = [taxonomy.split(";")[5] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["species"]          = [taxonomy.split(";")[6] for taxonomy in df_sp_tax_bacteria["taxonomy"]]
+    df_sp_tax_bacteria["phylum_or_class"]  = [phy if phy != "p__Proteobacteria" else cl for phy, cl in zip(df_sp_tax_bacteria["phylum"], df_sp_tax_bacteria["class"])]
+
+    node2phylum = {}
+    for genome, phylum in zip(df_sp_tax_bacteria["genome"], df_sp_tax_bacteria[taxonomy]):
+        node2phylum[genome] = phylum
+
+    for node in reversed(tree_bacteria.get_nonterminals()):
+        if node2phylum[node.clades[0].name] == node2phylum[node.clades[1].name]:
+            node2phylum[node.name] = node2phylum[node.clades[0].name]
+        else:
+            node2phylum[node.name] = "ancestral"
+
+    # read X-y dataset
+    df_dataset = pd.read_table(xygen_file)
+    df_dataset[taxonomy] = [node2phylum[nodename] for nodename in df_dataset["Species"]]
+
+    # decide how many data we sample
+    df_gain_count = pd.DataFrame(df_dataset[df_dataset["EventOccured"]==1].value_counts(taxonomy)).reset_index().rename(columns={0: "gain"})
+    df_all_count  = pd.DataFrame(df_dataset.value_counts(taxonomy)).reset_index().rename(columns={0: "total"})
+    df_posi_nega_count  = pd.merge(df_gain_count, df_all_count, on = taxonomy)
+    df_posi_nega_count["negative"] = [
+        min(int(gain * (1 - positive_ratio) / positive_ratio + 0.5), total - gain) for total, gain in zip(df_posi_nega_count["total"], df_posi_nega_count["gain"])
+        ]
+    df_posi_nega_count["positive"] = [ 
+        int(negative * positive_ratio / (1 - positive_ratio) + 0.5) for negative in df_posi_nega_count["negative"]
+        ]
+    df_posi_nega_count = df_posi_nega_count[
+        (df_posi_nega_count[taxonomy]!="ancestral") &
+        (df_posi_nega_count["negative"]>0) &
+        (df_posi_nega_count["positive"]>0)
+        ]
+
+    # down sampling
+    df_dataset_down_sampled = pd.DataFrame(columns = df_dataset.columns)
+
+    for group, negative, positive in zip(df_posi_nega_count[taxonomy], df_posi_nega_count["negative"], df_posi_nega_count["positive"]):
+        
+        df_dataset_negative = df_dataset[
+            (df_dataset[taxonomy] == group) &
+            (df_dataset["EventOccured"] == 0)
+        ].sample(n=negative, random_state = args.seed)
+        df_dataset_positive = df_dataset[
+            (df_dataset[taxonomy] == group) &
+            (df_dataset["EventOccured"] == 1)
+        ].sample(n=positive, random_state = args.seed)
+
+        df_dataset_down_sampled = pd.concat([df_dataset_down_sampled, df_dataset_positive, df_dataset_negative])
+
+    df_dataset_down_sampled[list(df_dataset.columns)].to_csv(sys.stdout, sep = "\t", index=False)
+
+#   interface
+if __name__ == "__main__":
+    # interface
+    parser = argparse.ArgumentParser(description='Phylogeny-aware downsampling', add_help=True)
+
+    parser.add_argument(
+        "-t", "--tree",
+        help="[Required] Tree file path",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-d", "--dataset",
+        help="[Required] Dataset file path: Output of 'evodictor generate'",
+        default=None,
+        type=str,
+        )
+
+    parser.add_argument(
+        "-x", "--taxonomy",
+        help="[Required] Taxonomy file path (tab-separated: '<tip name>\t<taxonomy info>')",
+        default=None,
+        type=str,
+        )
+    
+    parser.add_argument(
+        "-p", "--pos_ratio",
+        help="Positive instance ratio (Default: 0.10)",
+        default=0.1,
+        type=float,
+        )
+    
+    parser.add_argument(
+        "-r", "--resolution",
+        help="Taxonomic resolution (Default: phylum_or_class; Permissive values: 'phylum', 'class', 'phylum_or_class', 'order', 'family', 'genus'; 'phyum_or_class': Only p__Proteobacteria is broken down into classes)",
+        default='phylum_or_class',
+        type=str,
+        )
+
+    parser.add_argument(
+        "-s", "--seed",
+        help="Seed of the random number generator",
+        default=0,
+        type=int,
+        )
+
+    # parse arguments
+    args = parser.parse_args()
+
+    if args.tree == None or args.dataset == None or args.taxonomy == None:
+        print ("Please confirm how to use evodictor sample by 'evodictor sample -h'")
+    else:
+        main( args = args )

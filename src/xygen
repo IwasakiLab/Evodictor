@@ -6,9 +6,8 @@
 import argparse
 import csv
 import re
-import networkx as nx
 from Bio        import Phylo
-from modules    import mylink, CreateDataset, PrintVersion
+from modules    import mylink, CreateDataset
 ######################
 
 #   functions

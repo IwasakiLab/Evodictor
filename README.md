@@ -95,6 +95,28 @@ Output:
 
 **Example 3**
 
+Conduct phylogeny-aware downsampling from `branch_X_y.selected.20.txt`. Evodictor randomly extracts rows of `branch_X_y.selected.20.txt` so that the ratio of positive and negative instances is 10%:90% for every phylum.
+
+```shell
+evodictor sample -t example.tree -d branch_X_y.selected.20.txt -x ar122_taxonomy.tsv -r phylum > branch_X_y.selected.20.sampled.txt
+```
+
+Input:
+
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/branch_X_y.selected.20.txt)
+
+[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a newick format.
+
+[`ar122_taxonomy.tsv`](https://github.com/IwasakiLab/Evodictor/tree/main/example/ar122_taxonomy.tsv): Taxonomic information of every tip of `example.tree`
+
+Output:
+
+[`branch_X_y.selected.20.sampled.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.sampled.txt)
+
+
+
+**Example 4**
+
 Conduct three-fold cross validation of gene gain prediction by logistic regression for an ortholog group ("K00005")
 
 ```shell
@@ -175,6 +197,34 @@ optional arguments:
                         selection. (default: 2)
   --signed              Calculate signed importance value (positive or
                         negative) (default: False)
+```
+
+**evodictor sample / evosample**
+
+```
+usage: evodictor sample [-h] [-t TREE] [-d DATASET] [-x TAXONOMY] [-p POS_RATIO]
+                 [-r RESOLUTION] [-s SEED]
+
+Phylogeny-aware downsampling
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TREE, --tree TREE  [Required] Tree file path
+  -d DATASET, --dataset DATASET
+                        [Required] Dataset file path: Output of 'evodictor
+                        generate'
+  -x TAXONOMY, --taxonomy TAXONOMY
+                        [Required] Taxonomy file path (tab-separated: '<tip
+                        name> <taxonomy info>')
+  -p POS_RATIO, --pos_ratio POS_RATIO
+                        Positive instance ratio (Default: 0.10)
+  -r RESOLUTION, --resolution RESOLUTION
+                        Taxonomic resolution (Default: phylum_or_class;
+                        Permissive values: 'phylum', 'class',
+                        'phylum_or_class', 'order', 'family', 'genus';
+                        'phyum_or_class': Only p__Proteobacteria is broken
+                        down into classes)
+  -s SEED, --seed SEED  Seed of the random number generator
 ```
 
 **evodictor predict / predevo**

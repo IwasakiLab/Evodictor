@@ -7,7 +7,7 @@ import subprocess
 import sys
 ######################
 
-Version = "2.1.0"
+Version = "2.2.0"
 
 #   interface
 if __name__ == "__main__":
@@ -23,6 +23,10 @@ if __name__ == "__main__":
         elif args[1] == "select":
 
             software = "selevo"
+
+        elif args[1] == "sample":
+
+            software = "evosample"
 
         elif args[1] == "predict":
 
@@ -45,5 +49,5 @@ if __name__ == "__main__":
     if software != "":
         subprocess.call(command+"|sed 's/"+software+"/evodictor "+args[1]+"/g'", shell=True)
     else:
-        print("Available commands:\n\tevodictor generate\n\tevodictor select\n\tevodictor predict", file=sys.stderr)
+        print("Available commands:\n\tevodictor generate\n\tevodictor select\n\tevodictor sample\n\tevodictor predict", file=sys.stderr)
         print("Check options by 'evodictor [function] -h'", file=sys.stderr)

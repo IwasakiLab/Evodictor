@@ -1,5 +1,9 @@
 ### Update Log
 
+<h4> XX/XX/2022 Version 2.2.0 </h4>
+1. Debug: Fix the random seed of mutual_info_classif as 0
+2. Enable phylogeny-aware downsampling
+
 <h4> 10/08/2022 Version 2.1.0 </h4>
 1. Fix the random seed of mutual_info_classif as 0
 2. Set the latest version as 2.1.0

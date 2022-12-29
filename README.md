@@ -15,14 +15,6 @@
 
 1. Python3 (version: 3.7.0 or later) with biopython, scipy, numpy, imblearn, and scikit-learn modules *required*
 
-  - You can install these python modules using conda
-
-    ```shell
-    conda install -c conda-forge biopython imbalanced-learn
-    conda install -c anaconda scipy scikit-learn
-    conda install -c conda-forge conda-forge::numpy
-    ```
-
 ### Software installation
 
 Each installation step will take less than ~1 min
@@ -33,13 +25,28 @@ Each installation step will take less than ~1 min
 
 1. Download Evodictor by
 
-   ```shell
-    git clone 
-   ```
+    ```shell
+    git clone https://github.com/IwasakiLab/Evodictor.git
+    ```
 
-2. Add the absolute path of `xxx/src` directory to `$PATH`
+2. Install dependencies by
 
-3. Make `/src/*` executable
+    ```shell
+    conda install -c conda-forge biopython imbalanced-learn
+    conda install -c anaconda scipy scikit-learn
+    conda install -c conda-forge conda-forge::numpy
+    ```
+
+    or 
+
+    ```shell
+    conda env create -f=evodictor.yml
+    conda activate evodictor
+    ```
+
+3. Add the absolute path of `xxx/src` directory to `$PATH`
+
+4. Make `/src/*` executable
 
    ```shell
    chmod u+x xxx/src/*

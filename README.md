@@ -23,10 +23,11 @@ Each installation step will take less than ~1 min
 #### Installation of Evodictor
 
 
-1. Download Evodictor by
+1. Download Evodictor and move to the directory by
 
     ```shell
     git clone https://github.com/IwasakiLab/Evodictor.git
+    cd Evodictor/
     ```
 
 2. Install dependencies by
@@ -40,16 +41,20 @@ Each installation step will take less than ~1 min
     or 
 
     ```shell
-    conda env create -f=evodictor.yml
+    conda create -n evodictor --file evodictor_env.txt
     conda activate evodictor
     ```
 
-3. Add the absolute path of `xxx/src` directory to `$PATH`
+3. Add the absolute path of `Evodictor/src` directory to `$PATH`
 
-4. Make `/src/*` executable
+    ```shell
+    export PATH=$(pwd)/src:${PATH}
+    ```
+
+4. Make `Evodictor/src/*` executable
 
    ```shell
-   chmod u+x xxx/src/*
+   chmod u+x src/*
    ```
 
 ### Sample Codes

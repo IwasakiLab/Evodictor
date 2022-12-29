@@ -1,7 +1,7 @@
 ### Update Log
 
 <h4> Dec. 29th 2022 Version 2.2.1 </h4>
-1. Installation update
+1. Installation updates
 
 <h4> Dec. 29th 2022 Version 2.2.0 </h4>
 1. Debug: Fix the random seed of mutual_info_classif as 0

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import modules ###
-from modules import Scaling, Prediction, PrintVersion
+from modules import Scaling, Prediction
 from scipy import stats
 import argparse
 import csv

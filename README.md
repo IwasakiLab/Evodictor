@@ -107,13 +107,11 @@ Input:
 
 [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a newick format.
 
-[`ar122_taxonomy.tsv`](https://github.com/IwasakiLab/Evodictor/tree/main/example/ar122_taxonomy.tsv): Taxonomic information of every tip of `example.tree`
+[`ar122_taxonomy.tsv`](https://github.com/IwasakiLab/Evodictor/tree/hotfix/example/ar122_taxonomy.tsv): Taxonomic information of every tip of `example.tree`
 
 Output:
 
-[`branch_X_y.selected.20.sampled.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.sampled.txt)
-
-
+[`branch_X_y.selected.20.sampled.txt`](https://github.com/IwasakiLab/Evodictor/tree/hotfix/example/output/branch_X_y.selected.20.sampled.txt)
 
 **Example 4**
 

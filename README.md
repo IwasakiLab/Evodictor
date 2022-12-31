@@ -3,7 +3,9 @@
 
 ### Overview of Evodictor
 
-**Evodictor** is a software package for predicting gain/loss evolution of given traits from a species-trait table and a phylogenetic tree
+**Evodictor** is a software package for predicting gain/loss evolution of given traits from a species-trait table and a phylogenetic tree. Evodictor predicts gain/loss probability of a gene from a gene repertoire of a genome (i.e., presence/absence of every gene) by learning past gene/gain-loss evolution across diverse species.
+
+<img src=image/Fig1.png >
 
 ### Supported Environment
 

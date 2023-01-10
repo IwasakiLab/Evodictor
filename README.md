@@ -3,9 +3,11 @@
 
 ### Overview of Evodictor
 
-**Evodictor** is a software package for learning patterns and predicting the future of evolution by gain/losses of given binary traits (e.g., gene presence/absence). Evodictor takes a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree as input, then predicts gain/loss probability of a trait from a given trait repertoire of a species (e.g., presence/absence of every gene in the genome of the species). To predict trait gain/loss, Evodictor learns what traits tend to be present/absent prior to gain/losses of the predicted trait from past gain/loss evolution across diverse species. Evodictor was established in a study (XXXXXX), and was demonstrated to predict gene gain/loss evolution of bacterial metabolic systems.
+**Evodictor** is a software package for learning patterns and predicting the future of evolution by gain/losses of given binary traits (e.g., gene presence/absence). Evodictor takes a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree as input, then predicts the gain/loss probability of a target trait from a given trait repertoire of a species (e.g., presence/absence of every gene in the genome of the species). To predict trait gain/loss, Evodictor learns what traits tend to be present/absent prior to gain/losses of the target trait from past gain/loss evolution across diverse species. Evodictor was established in a study (XXXXXX), and was demonstrated to predict gene gain/loss evolution of bacterial metabolic systems.
 
 <img src=image/Fig1.png >
+
+**Figure 1 Overview of Evodictor for gene gain/loss prediction** 
 
 ### Supported Environment
 
@@ -49,11 +51,11 @@ Each installation step will take less than ~1 min
 
 ### Sample Codes
 
-This repository contains an example input file in the `examples` directory so that users can easily try predicting gene gain/loss evolution using Evodictor in a step-by-step manner:
+This repository contains an example input file in the `examples` directory so users can quickly try predicting gene gain/loss evolution using Evodictor step-by-step:
 
 **Step 1: Dataset Generation**
 
-Generate a dataset for machine learning from a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree to predict gene gain of an ortholog group ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005) in this example)
+Generate a dataset for machine learning from a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree to predict gene gain of a target ortholog group ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005) in this example)
 
 ```shell
 evodictor generate --target K00005 -X OG_node_state.txt -y OG_node_state.txt -t example.tree --predictor feature_OG.txt --gl gain > branch_X_y.txt
@@ -63,15 +65,15 @@ Or you can type "xygen" instead of "evodictor generate".
 
 Input:
 
-[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a newick format.
+[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): A phylogenetic tree in a Newick format.
 
-[`OG_node_state.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/OG_node_state.txt): The presence/absence profile of every ortholog group (OG) for every tip node (extant species) and every internal node (ancestors) of [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree). There is one row for every internal/tip node in this file. The first, second, and third column of every row indicate the OG name, node name, and the presence/absence state, respectively. The presence/absence state is represented as `0` (absent), `1` (present), or `0.5` (uncertain; for ancestors). Rows for which states are `0` can be ommitted in this file (in other words, states of nodes not defined in this file will be treated as `0`).
+[`OG_node_state.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/OG_node_state.txt): The presence/absence profile of every ortholog group (OG) for every tip node (extant species) and every internal node (ancestors) of [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree). There is one row for every internal/tip node in this file. The first, second, and third columns of every row indicate the OG name, node name, and the presence/absence state, respectively. The presence/absence state is represented as `0` (absent), `1` (present), or `0.5` (uncertain; for ancestors). Rows for which states are `0` can be omitted in this file (in other words, states of nodes not defined in this file are treated as `0`).
 
-[`feature_OG.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/feature_OG.txt): Correspondence between OGs (e.g., [K00001](https://www.genome.jp/dbget-bin/www_bget?ko:K00001)) and features (defined as groups of OGs; e.g., [M00001](https://www.genome.jp/dbget-bin/www_bget?md:M00001)). The input of the machine learning model in Evodictor is the vector in which every dimension (feature) correspond to the number of present OGs included in the feature.
+[`feature_OG.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/feature_OG.txt): Correspondence between OGs (e.g., [K00001](https://www.genome.jp/dbget-bin/www_bget?ko:K00001)) and features (defined as groups of OGs; e.g., [M00001](https://www.genome.jp/dbget-bin/www_bget?md:M00001)). The input of the machine learning model in Evodictor is the vector in which every dimension (feature) corresponds to the number of present OGs included in the feature.
 
 Output:
 
-[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt): The dataset for machine learning which can be an input file of `evodictor predict`. The first row is the header and each of the following rows correspond to a branch in the [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree). The first, second, and third column of every row indicate the node name of a parental species of a branch in [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree), number of present traits of every feature in the parental species (separated by `;`), and occurrence of gene gain of predicted OG ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005)) at the branch (`1`: the gene was gained at the branch;  `0`: the gene was not gained at the branch). 
+[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt): The dataset for machine learning which can be an input file of `evodictor predict`. The first row is the header, and each of the following rows correspond to a branch in the [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree). The first, second, and third column of every row indicate the node name of a parental species of a branch in [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree), the number of present traits of every feature in the parental species (separated by `;`), and the occurrence of gene gain of predicted OG ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005)) at the branch (`1`: the gene was gained at the branch;  `0`: the gene was not gained at the branch). 
 
 **Step 2: Feature Selection**
 
@@ -95,13 +97,19 @@ Output:
 
 [`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.txt) : The dataset for machine learning which can be an input file of `evodictor predict` and contain only selected top-20 important features. 
 
-**Step 3 Cross-validation**
+**Step 3: Cross-validation**
 
 Conduct three-fold cross validation of gene gain prediction by logistic regression for an OG ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005))
 
 ```shell
 evodictor predict -i branch_X_y.selected.20.txt -c -k 3 -m LR --header > cross_validated_AUCs.txt
 ```
+
+Input:
+
+[`branch_X_y.selected.20.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.selected.20.txt) : The file generated in **Step 3**
+
+Output:
 
 [`cross_validated_AUCs.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/cross_validated_AUCs.txt) : List of the three AUCs (AUROCs) measured by three-fold cross validation
 

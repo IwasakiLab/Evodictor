@@ -7,7 +7,7 @@
 
 <img src=image/Fig1.png >
 
-**Figure 1 Overview of Evodictor for gene gain/loss prediction** 
+**Figure 1. Overview of Evodictor for gene gain/loss prediction.** 
 
 ### Supported Environment
 

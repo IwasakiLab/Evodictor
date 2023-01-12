@@ -3,7 +3,7 @@
 
 ### Overview of Evodictor
 
-**Evodictor** is a software package for learning patterns and predicting the future of evolution by gain/losses of given binary traits (e.g., gene presence/absence). Evodictor takes a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree as input, then predicts the gain/loss probability of a target trait from a given trait repertoire of a species (e.g., presence/absence of every gene in the genome of the species). To predict trait gain/loss, Evodictor learns what traits tend to be present/absent prior to gain/losses of the target trait from past gain/loss evolution across diverse species. Evodictor was established in a study (XXXXXX), and was demonstrated to predict gene gain/loss evolution of bacterial metabolic systems.
+**Evodictor** is a software package for learning patterns and predicting the future of evolution by gain/losses of given binary traits (e.g., gene presence/absence). Evodictor takes a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree as input, then predicts the gain/loss probability of a target trait from a given trait repertoire of a species (e.g., presence/absence of every gene in the genome of the species). To predict trait gain/loss, Evodictor learns what traits tend to be present/absent prior to gain/losses of the target trait from past gain/loss evolution across diverse species. Evodictor was established in [Konno and Iwasaki, Science Advances, 2023](https://www.science.org/doi/10.1126/sciadv.adc9130), and was demonstrated to predict gene gain/loss evolution of bacterial metabolic systems.
 
 <img src=image/Fig1.png >
 
@@ -257,6 +257,10 @@ optional arguments:
                         ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’
                         (default: 'liblinear')
 ```
+
+### How to cite Evodictor
+
+Naoki Konno, and Wataru Iwasaki. 2023. “Machine Learning Enables Prediction of Metabolic System Evolution in Bacteria.” Science Advances 9 (2): eadc9130.
 
 ### Contact
 

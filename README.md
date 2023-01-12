@@ -310,6 +310,10 @@ optional arguments:
                         (default: 'liblinear')
 ```
 
+### How to cite Evodictor
+
+Naoki Konno, and Wataru Iwasaki. 2023. “Machine Learning Enables Prediction of Metabolic System Evolution in Bacteria.” Science Advances 9 (2): eadc9130.
+
 ### Contact
 
 

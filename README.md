@@ -113,6 +113,31 @@ Output:
 
 [`cross_validated_AUCs.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/cross_validated_AUCs.txt) : List of the three AUCs (AUROCs) measured by three-fold cross validation
 
+**Step 4: Future gene gain prediction**
+
+Conduct training of logistic regression model and prediction of future gene gain probability of an OG ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005)) for every species. All the features were used for model training and prediction in this example. You can also conduct prediction with only selected features by changing two of the input files: `feature_OG.txt` and `branch_X_y.txt`.
+
+```shell
+evodictor generate --target K00005 -X OG_node_state.txt -y OG_node_state.txt -t example.tree --predictor feature_OG.txt --gl gain --ex > extant_X.txt
+evodictor predict -m LR --header -i branch_X_y.txt -t extant_X.txt > species_probability.txt
+```
+
+Input:
+
+[`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree): The same input file as **Step 1**
+
+[`OG_node_state.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/OG_node_state.txt): The same input file as **Step 1**
+
+[`feature_OG.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/feature_OG.txt): The same input file as **Step 1**
+
+[`branch_X_y.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/branch_X_y.txt): The file generated in **Step 1**
+
+Output: 
+
+[`extant_X.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/extant_X.txt) : List of input feature vectors of extant species (i.e., tip nodes of [`example.tree`](https://github.com/IwasakiLab/Evodictor/tree/main/example/example.tree)). The first row is a header. The first and second columns in each of the following rows indicate a extant species name and the number of present traits for every feature in the extant species (separated by `;`).
+
+[`species_probability.txt`](https://github.com/IwasakiLab/Evodictor/tree/main/example/output/species_probability.txt) : Predicted gene gain probability of ([K00005](https://www.genome.jp/dbget-bin/www_bget?ko:K00005) for every extant species. The first and second columns in each row indicate a extant species name and the predicted gene gain probability.
+
 ### Usage
 
 **evodictor generate / xygen**

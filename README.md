@@ -5,7 +5,7 @@
 
 **Evodictor** is a software package for learning patterns and predicting the future of evolution by gain/losses of given binary traits (e.g., gene presence/absence). Evodictor takes a phylogenetic tree and presence/absence profiles of every trait for all the extant and the ancestral species in the tree as input, then predicts the gain/loss probability of a target trait from a given trait repertoire of a species (e.g., presence/absence of every gene in the genome of the species). To predict trait gain/loss, Evodictor learns what traits tend to be present/absent prior to gain/losses of the target trait from past gain/loss evolution across diverse species. Evodictor was established in a study [Konno and Iwasaki, Science Advances, 2023](https://www.science.org/doi/10.1126/sciadv.adc9130), and was demonstrated to predict gene gain/loss evolution of bacterial metabolic systems.
 
-<img src=image/Fig1.png >
+<img src=image/Evodictor.png >
 
 **Figure 1. Overview of Evodictor for gene gain/loss prediction.** 
 

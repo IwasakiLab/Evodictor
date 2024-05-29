@@ -218,7 +218,7 @@ optional arguments:
                         [required] Input file path
   -m METHOD, --method METHOD
                         [required] Feature selection method (Permissive
-                        values: 'ANOVA', 'RandomForest')
+                        values: 'ANOVA', 'MI', 'RF')
   --scores SCORES, --o1 SCORES
                         Output feature importance file path ('stdout' is also
                         acceptable, 'None' inactivates output) (default:

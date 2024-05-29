@@ -26,24 +26,6 @@ def FeatureSelection(
         selector = SelectKBest(score_func=f_classif, k=k) 
         selector.fit(X_array, y_array)
         scores   = selector.scores_
-
-        # judge mean({x | y(x) = 1}) > mean({x | y(x) = 0}) or not
-        for j in range(len(X_array[0])):
-            xlist_one = []
-            xlist_zero = []
-            for i in range(len(X_array)):
-                if(y_array[i] == 1):
-                    xlist_one.append(X_array[i][j])
-                elif(y_array[i] == 0):
-                    xlist_zero.append(X_array[i][j])
-                else:
-                    print("Warning: X_array["+str(i)+"]["+str(j)+"] = "+str(X_array[i][j]), file = sys.stderr)
-
-            if (signed):
-                if (mean(xlist_one) >= mean(xlist_zero)):
-                    scores[j] = scores[j]
-                else:
-                    scores[j] = -1 * scores[j]
     
     elif (method == "RF"):
 
@@ -76,6 +58,24 @@ def FeatureSelection(
         selector = SelectKBest(score_func=mutual_info_classif_zero, k=k, ) 
         selector.fit(X_array, y_array)
         scores   = selector.scores_
+
+    # get sign information: judge mean({x | y(x) = 1}) > mean({x | y(x) = 0}) or not
+    if (signed):
+        for j in range(len(X_array[0])):
+            xlist_one = []
+            xlist_zero = []
+            for i in range(len(X_array)):
+                if(y_array[i] == 1):
+                    xlist_one.append(X_array[i][j])
+                elif(y_array[i] == 0):
+                    xlist_zero.append(X_array[i][j])
+                else:
+                    print("Warning: X_array["+str(i)+"]["+str(j)+"] = "+str(X_array[i][j]), file = sys.stderr)
+            
+            if (mean(xlist_one) >= mean(xlist_zero)):
+                scores[j] = scores[j]
+            else:
+                scores[j] = -1 * scores[j]
 
     # convert nan into 0
     for i in range(len(scores)):

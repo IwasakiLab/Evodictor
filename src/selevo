@@ -126,7 +126,7 @@ def selevo(
 
         # ranking scores
         abs_scores = [abs(score) for score in scores]
-        sorted_idx_list = np.argsort(abs_scores)[::-1]
+        sorted_idx_list = np.argsort(abs_scores)[::-1] # scores may be negative when --signed is specified
 
     # for each k, make a mask and a new extacted dataset
     for k in k_list:
@@ -283,14 +283,14 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--n_estimators",
-        help="This option is active only when '-m RandomForest'. Number of trees for random forest feature selection.", 
+        help="This option is active only when '-m RF'. Number of trees for random forest feature selection.", 
         type=int,
         default=100
     )
 
     parser.add_argument(
         "--max_depth",
-        help="This option is active only when '-m RandomForest'. Maximum tree depth for random forest feature selection.", 
+        help="This option is active only when '-m RF'. Maximum tree depth for random forest feature selection.", 
         type=int,
         default=2
     )

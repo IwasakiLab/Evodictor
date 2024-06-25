@@ -1,5 +1,9 @@
 ### Update Log
 
+<h4> Jun. 25th 2024 Version 2.3.1 </h4>
+1. Enable signed feature importance
+2. Enable importance score based on odds ratio
+
 <h4> Dec. 29th 2022 Version 2.2.1 </h4>
 1. Installation updates
 

@@ -37,16 +37,7 @@ Each installation step will take less than ~1 min
 2. Install dependencies by
 
     ```shell
-    conda install -c conda-forge biopython imbalanced-learn
-    conda install -c anaconda scipy scikit-learn
-    conda install -c conda-forge conda-forge::numpy
-    ```
-
-    or 
-
-    ```shell
-    conda create -n evodictor --file evodictor_env.txt
-    conda activate evodictor
+    conda install -c conda-forge biopython imbalanced-learn numpy scikit-learn scipy
     ```
 
 3. Add the absolute path of `Evodictor/src` directory to `$PATH`
